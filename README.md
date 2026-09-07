@@ -91,8 +91,9 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
 - 🧩 **Modular KMP architecture, 70 gateways behind it.** One Gradle module per native-SDK
   provider, contributed into a registry via Koin `getAll<PaymentGateway>()`, adding gateway *N+1*
   touches no existing code. Feature modules never depend on each other; they meet only at the
-  `:app` composition root. The catalog spans 7 native-SDK integrations, 47 hosted-webview gateways,
-  8 mobile-money flows, and 4 catalog-only/KYC-gated entries, all behind the one contract below.
+  `:app` composition root. The catalog spans 15 native-SDK integrations, 1 internal wallet ledger,
+  44 hosted-webview gateways, 7 mobile-money flows, and 3 catalog-only/KYC-gated entries, all behind
+  the one contract below.
 - 💸 **More than pay-in, five money-movement rails, plus split payments.** Beyond one-shot checkout
   the server now models **payouts** (`/payouts`, money *out* to a beneficiary), **mandates &
   subscriptions** (`/mandates` + scheduled debits and cancel), a **card vault** (`/vault`, tokenize
@@ -106,16 +107,16 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
   (+ Google Pay), Square, Omise, and a raw UPI intent flow all implement the same tiny
   `PaymentGateway` interface. The Activity-callback SDKs are bridged into suspending coroutines by
   a `PaymentHost` that never leaks an `Activity` upward. `provider:hosted-webview` and
-  `provider:mobile-money` cover the other 55 gateways generically, redirect-and-return-URL
+  `provider:mobile-money` cover the other 51 gateways generically, redirect-and-return-URL
   checkout and confirm-on-the-payer's-phone flows, respectively, behind the same contract.
 - 🏠 **A real Home dashboard, not just a catalog.** Animated gateway-count and success-rate stats,
   recent activity, one tap into Explore, the redesign's front door, backed by the same
   server-authoritative payment journal every other screen reads.
 - 🎨 **Real gateway branding, honestly degraded.** A `GatewayBranding` registry renders each
   provider's actual logo where a rights-cleared source exists (8 gateways today, sourced from
-  `simple-icons`, CC0), and falls back to a deterministic, hash-colored monogram for the other 58
-  every gateway gets an intentional-looking badge, and adding gateway *N+1* needs zero registry
-  upkeep.
+  `simple-icons`, CC0), and falls back to a deterministic, hash-colored monogram for the other 62
+  gateways. Every gateway gets an intentional-looking badge, and adding gateway *N+1* needs zero
+  registry upkeep.
 - 🔒 **Motion that reinforces security, not just decorates.** A brief `ShieldPulse` shield-icon
   draw-in on every payment-bearing screen visually reflects the `FLAG_SECURE` protection already in
   place underneath it, a half-second cue, not a gimmick, and it respects `LocalReducedMotion` like
