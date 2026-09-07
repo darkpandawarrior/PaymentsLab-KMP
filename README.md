@@ -88,7 +88,7 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
 
 ## Highlights
 
-- 🧩 **Modular KMP architecture, 66 gateways behind it.** One Gradle module per native-SDK
+- 🧩 **Modular KMP architecture, 70 gateways behind it.** One Gradle module per native-SDK
   provider, contributed into a registry via Koin `getAll<PaymentGateway>()`, adding gateway *N+1*
   touches no existing code. Feature modules never depend on each other; they meet only at the
   `:app` composition root. The catalog spans 7 native-SDK integrations, 47 hosted-webview gateways,
@@ -171,7 +171,7 @@ failure modes, not an accident of the framework.
 
 The whole app is honest about what a solo developer can actually run without a business account.
 This table highlights the native-SDK flagships and a few notable others, see the in-app catalog
-(the Explore tab) for the full 66-gateway list, each with its own status badge and region.
+(the Explore tab) for the full 70-gateway list, each with its own status badge and region.
 
 | Provider | Category | Region | Sandbox (no KYC)? | In v1 | Notes |
 |---|---|---|:--:|:--:|---|
@@ -651,7 +651,7 @@ gateway auto-degrades to `MOCK_MODE`; set → it upgrades to real, no code chang
   `external/kmp-toolkit`'s `:payments-api` module, pulled in via `includeBuild` + dependency
   substitution alongside `:security`, `:common`, `:mvi-core`, `:network`, `:designsystem` and all
   19 provider gateways (see [Module map](#module-map))
-- Expand `GatewayBranding`'s curated real-logo tier beyond the current 8 (the other 58 gateways
+- Expand `GatewayBranding`'s curated real-logo tier beyond the current 8 (the other 62 gateways
   render a generated monogram today, accurate, not broken, but a growing real-logo set would be
   nice)
 - Wire the AI provider chain and its settings screen on iOS and the web preview, both currently

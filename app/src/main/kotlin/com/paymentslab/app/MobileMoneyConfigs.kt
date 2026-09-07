@@ -28,3 +28,15 @@ val waveConfig = momoConfig("wave", "Wave", "Senegal")
 val ecocashConfig = momoConfig("ecocash", "EcoCash", "Zimbabwe")
 val easypaisaConfig = momoConfig("easypaisa", "Easypaisa", "Pakistan")
 val vukapayConfig = momoConfig("vukapay", "VukaPay", "Africa")
+
+/** Every mobile-money config wired into the app — see `ReadmeGatewayCountTest`. */
+val allMobileMoneyConfigs =
+    listOf(
+        mtnMomoConfig,
+        beyonicConfig,
+        orangeMoneyConfig,
+        waveConfig,
+        ecocashConfig,
+        easypaisaConfig,
+        vukapayConfig,
+    )
