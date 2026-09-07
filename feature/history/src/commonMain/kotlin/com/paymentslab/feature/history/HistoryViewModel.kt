@@ -3,10 +3,10 @@ package com.paymentslab.feature.history
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import com.paymentslab.core.designsystem.format
+import com.siddharth.kmp.mvi.StateViewModel
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import com.siddharth.kmp.paymentsapi.PendingPayment
 import com.siddharth.kmp.paymentsapi.PendingPaymentJournal
-import com.siddharth.kmp.mvi.StateViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList

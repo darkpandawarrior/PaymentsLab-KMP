@@ -39,7 +39,9 @@ val versionStamp: Map<String, String> =
     providers
         .exec {
             commandLine(rootProject.file("scripts/version.sh").absolutePath)
-        }.standardOutput.asText.get()
+        }.standardOutput
+        .asText
+        .get()
         .lineSequence()
         .filter { it.contains('=') }
         .associate { it.substringBefore('=') to it.substringAfter('=') }

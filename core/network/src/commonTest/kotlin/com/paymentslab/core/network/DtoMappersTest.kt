@@ -1,15 +1,15 @@
 package com.paymentslab.core.network
 
-import com.siddharth.kmp.paymentsapi.GatewayId
-import com.siddharth.kmp.paymentsapi.PaymentStatus
-import com.siddharth.kmp.paymentsapi.PayoutStatus
-import com.siddharth.kmp.paymentsapi.VerificationRequest
 import com.paymentslab.core.protocol.OrderResponse
 import com.paymentslab.core.protocol.PaymentStatusDto
 import com.paymentslab.core.protocol.PaymentStatusResponse
 import com.paymentslab.core.protocol.PayoutResponse
 import com.paymentslab.core.protocol.PayoutStatusDto
 import com.paymentslab.core.protocol.VerifyResponse
+import com.siddharth.kmp.paymentsapi.GatewayId
+import com.siddharth.kmp.paymentsapi.PaymentStatus
+import com.siddharth.kmp.paymentsapi.PayoutStatus
+import com.siddharth.kmp.paymentsapi.VerificationRequest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
