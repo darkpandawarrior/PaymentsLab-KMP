@@ -70,6 +70,10 @@ jobs:
             [ -f "$f" ] && { echo "== $f"; cat "$f"; echo; }
           done
           ls -la app/build/outputs/roborazzi 2>/dev/null | head -60
+          for f in app/build/outputs/roborazzi/failure_shake_actual.png app/build/outputs/roborazzi/failure_shake_compare.png app/build/outputs/roborazzi/mock_mode_badge_shimmer_actual.png; do
+            [ -f "$f" ] && { echo "== base64 $f"; base64 -w0 "$f"; echo; }
+          done
+          java -version 2>&1 | head -1
 
       - name: Assemble debug APK
         run: ./gradlew :app:assembleDebug
