@@ -14,6 +14,7 @@ import com.paymentslab.core.designsystem.toTimelineStep
 import com.paymentslab.core.orchestration.PaymentFlowRunner
 import com.paymentslab.core.orchestration.fsm.PaymentPhase
 import com.paymentslab.feature.lab.explain.GatewayFailure
+import com.paymentslab.feature.lab.explain.RecordedFlowStore
 import com.siddharth.kmp.designsystem.StepState
 import com.siddharth.kmp.designsystem.TimelineStep
 import com.siddharth.kmp.mvi.StateViewModel
@@ -102,6 +103,10 @@ data class ProviderLabUiState(
  */
 class ProviderLabViewModel(
     private val flowRunner: PaymentFlowRunner,
+    // ponytail: defaulted rather than touching every existing test call site — this app has exactly
+    // one composition root (Android), which always resolves the real Koin-bound singleton; the
+    // default only matters to a test that doesn't care about FlowDiff.
+    private val recordedFlows: RecordedFlowStore = RecordedFlowStore(),
 ) : StateViewModel<ProviderLabUiState>(ProviderLabUiState()) {
     val uiState: StateFlow<ProviderLabUiState> get() = state
 
@@ -130,6 +135,9 @@ class ProviderLabViewModel(
                     }
                 }
                 val terminal = accumulated.terminalStatus()
+                // Recorded regardless of outcome — FlowDiff compares terminal status, leg count and
+                // webhook-only capture, all of which are meaningful on a failed run too.
+                recordedFlows.record(gatewayId, accumulated.toList())
                 setState {
                     copy(
                         steps = accumulated.toTimeline(runInFlight = false),

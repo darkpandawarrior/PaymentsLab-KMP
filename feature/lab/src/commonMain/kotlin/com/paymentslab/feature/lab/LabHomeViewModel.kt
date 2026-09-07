@@ -3,10 +3,10 @@ package com.paymentslab.feature.lab
 import androidx.compose.runtime.Immutable
 import com.paymentslab.core.designsystem.GatewayStatusUi
 import com.paymentslab.core.designsystem.RegionCount
+import com.siddharth.kmp.mvi.StateViewModel
 import com.siddharth.kmp.paymentsapi.Capability
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentGatewayRegistry
-import com.siddharth.kmp.mvi.StateViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf

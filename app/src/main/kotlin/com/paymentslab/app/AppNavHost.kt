@@ -31,6 +31,7 @@ import com.paymentslab.feature.home.HomeRoot
 import com.paymentslab.feature.lab.LabHomeRoot
 import com.paymentslab.feature.lab.ProviderLabRoot
 import com.paymentslab.feature.lab.ai.LabSettingsRoot
+import com.paymentslab.feature.lab.explain.FlowDiffRoot
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentGatewayRegistry
 import com.siddharth.kmp.paymentsapi.PaymentHost
@@ -113,10 +114,14 @@ fun AppNavHost(paymentHost: PaymentHost) {
                     LabHomeRoot(
                         onOpenProvider = { gatewayId -> navController.navigate("provider/${gatewayId.value}") },
                         onOpenSettings = { navController.navigate("lab-settings") },
+                        onOpenFlowDiff = { navController.navigate("flow-diff") },
                     )
                 }
                 composable("lab-settings") {
                     LabSettingsRoot(onBack = { navController.popBackStack() })
+                }
+                composable("flow-diff") {
+                    FlowDiffRoot(onBack = { navController.popBackStack() })
                 }
                 composable(
                     "provider/{id}",
