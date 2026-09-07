@@ -36,4 +36,23 @@ class ReadmeGatewayCountTest {
             readme.contains("$trueCount gateways behind it"),
         )
     }
+
+    /**
+     * The "one contract, seven real SDKs" bullet's other number: `provider:hosted-webview` +
+     * `provider:mobile-money` are the only two generic archetypes it names, so its "the other N
+     * gateways" figure is exactly [allHostedGatewayConfigs] + [allMobileMoneyConfigs] (unlike
+     * [readmeGatewayCountMatchesRegistry]'s total, this one deliberately excludes the 15
+     * single-instance modules, the wallet rail, and the 3 catalog-only stubs).
+     */
+    @Test
+    fun readmeGenericArchetypeCountMatchesRegistry() {
+        val genericCount = allHostedGatewayConfigs.size + allMobileMoneyConfigs.size
+
+        val readme = File("../README.md").readText()
+        assertTrue(
+            "README.md should claim \"the other $genericCount gateways generically\" (measured from " +
+                "allHostedGatewayConfigs + allMobileMoneyConfigs), but that phrase wasn't found.",
+            readme.contains("the other $genericCount gateways generically"),
+        )
+    }
 }

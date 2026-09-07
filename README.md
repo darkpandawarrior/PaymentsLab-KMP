@@ -99,14 +99,14 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
   once, charge later by id), **marketplace Connect onboarding** (`/connect`, sub-merchant KYC + split
   payouts), and an **internal double-entry wallet ledger** (`/wallet`, seed / debit / refund against a
   real running balance), plus **split payments**, a two-leg orchestration that compensates if one leg
-  fails. Ten new provider modules ride these rails, Paystack, Flutterwave, Paytm, Xendit, M-Pesa,
+  fails. Nine new provider modules ride these rails, Paystack, Flutterwave, Paytm, Xendit, M-Pesa,
   Peach and NMI, plus a `wallet` balance rail and a `cash` record-only gateway, every one honest
   `MOCK_MODE` until real sandbox keys are set. Each rail is idempotency-keyed like the pay-in path.
 - 🔌 **One contract, seven real SDKs, plus two generic archetypes.** Razorpay, Cashfree, Stripe
   (+ Google Pay), Square, Omise, and a raw UPI intent flow all implement the same tiny
   `PaymentGateway` interface. The Activity-callback SDKs are bridged into suspending coroutines by
   a `PaymentHost` that never leaks an `Activity` upward. `provider:hosted-webview` and
-  `provider:mobile-money` cover the other 55 gateways generically, redirect-and-return-URL
+  `provider:mobile-money` cover the other 51 gateways generically, redirect-and-return-URL
   checkout and confirm-on-the-payer's-phone flows, respectively, behind the same contract.
 - 🏠 **A real Home dashboard, not just a catalog.** Animated gateway-count and success-rate stats,
   recent activity, one tap into Explore, the redesign's front door, backed by the same
