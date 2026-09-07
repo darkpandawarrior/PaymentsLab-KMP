@@ -99,6 +99,10 @@ fun Application.module(config: ServerConfig = ServerConfig.fromEnv()) {
                 StripeAdapter(publishableKey = config.stripePublishableKey, secret = config.stripeSecret),
                 CashfreeAdapter(appId = config.cashfreeAppId, secret = config.cashfreeSecret),
                 GooglePayAdapter(),
+                // Flutterwave's client module (`provider:flutterwave`) rides the same
+                // HostedCheckoutRelay/checkout_url mechanics as every generic archetype-C gateway below
+                // (see docs/providers/flutterwave.md) — no dedicated adapter needed, same as paytm.
+                mockHostedAdapter("flutterwave", "Flutterwave", config.publicBaseUrl),
                 // B2 fan-out: MOCK_MODE only — see each docs/providers/<id>.md for why. All ride the
                 // generic archetype-C adapter untouched since B0; proves the fan-out is mechanical.
                 mockHostedAdapter("mollie", "Mollie", config.publicBaseUrl),
