@@ -15,10 +15,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -48,6 +50,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LabHomeRoot(
     onOpenProvider: (GatewayId) -> Unit,
+    onOpenSettings: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: LabHomeViewModel = koinViewModel(),
 ) {
@@ -59,6 +62,7 @@ fun LabHomeRoot(
         onToggleRegionFilter = viewModel::onToggleRegionFilter,
         onClearFilters = viewModel::onClearFilters,
         onOpenProvider = onOpenProvider,
+        onOpenSettings = onOpenSettings,
         modifier = modifier,
     )
 }
@@ -68,6 +72,7 @@ fun LabHomeRoot(
 fun LabHomeScreen(
     state: LabHomeUiState,
     onOpenProvider: (GatewayId) -> Unit,
+    onOpenSettings: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     onSearchQueryChange: (String) -> Unit = {},
     onToggleStatusFilter: (GatewayStatusUi) -> Unit = {},
@@ -77,7 +82,19 @@ fun LabHomeScreen(
     val hasActiveFilters =
         state.searchQuery.isNotBlank() || state.selectedStatuses.isNotEmpty() || state.selectedRegions.isNotEmpty()
 
-    LabScaffold(title = "Integration Lab") { padding ->
+    LabScaffold(
+        title = "Integration Lab",
+        actions = {
+            // Only Android wires a real onOpenSettings today (AiSettingsViewModel needs
+            // ModelManager/OnDeviceLlm/SecureKeyStore, unbound on iOS/web) — render the gear
+            // only where it does something, rather than showing dead chrome everywhere.
+            if (onOpenSettings != null) {
+                IconButton(onClick = onOpenSettings) {
+                    Icon(Icons.Filled.Settings, contentDescription = "AI settings")
+                }
+            }
+        },
+    ) { padding ->
         LazyColumn(
             modifier =
                 modifier

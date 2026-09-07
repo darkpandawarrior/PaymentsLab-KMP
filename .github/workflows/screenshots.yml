@@ -17,6 +17,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
 jobs:
   screenshots:
     name: Record screenshots
@@ -50,6 +52,19 @@ jobs:
 
       - name: Record Roborazzi screenshots
         run: ./gradlew :app:recordRoborazziDebug
+      # Baselines are only honest when recorded on this renderer (macOS fonts differ). A manual
+      # dispatch on a branch commits what the CI renderer produced back to that branch, the same
+      # loop Doori's and Candidai's "Record & commit baselines" jobs close. Pushes made with the
+      # workflow token never trigger checks, so re-run them with an empty commit afterwards.
+      - name: Commit re-recorded baselines (manual dispatch on a branch only)
+        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
+        run: |
+          if git diff --quiet -- docs/screenshots; then echo "baselines unchanged"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots
+          git commit -m "test(screenshot): re-record baselines on the CI renderer"
+          git push origin HEAD:"${GITHUB_REF_NAME}"
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4

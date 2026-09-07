@@ -30,6 +30,7 @@ import com.paymentslab.feature.history.HistoryRoot
 import com.paymentslab.feature.home.HomeRoot
 import com.paymentslab.feature.lab.LabHomeRoot
 import com.paymentslab.feature.lab.ProviderLabRoot
+import com.paymentslab.feature.lab.ai.LabSettingsRoot
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentGatewayRegistry
 import com.siddharth.kmp.paymentsapi.PaymentHost
@@ -111,7 +112,11 @@ fun AppNavHost(paymentHost: PaymentHost) {
                 composable("explore") {
                     LabHomeRoot(
                         onOpenProvider = { gatewayId -> navController.navigate("provider/${gatewayId.value}") },
+                        onOpenSettings = { navController.navigate("lab-settings") },
                     )
+                }
+                composable("lab-settings") {
+                    LabSettingsRoot(onBack = { navController.popBackStack() })
                 }
                 composable(
                     "provider/{id}",

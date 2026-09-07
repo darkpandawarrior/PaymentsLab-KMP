@@ -61,6 +61,15 @@ jobs:
       # provider unit tests. No emulator required.
       - name: Verification gate (lint + tests)
         run: ./gradlew fastGate
+      # The artifact quota can block the Roborazzi report upload, so on failure print the
+      # comparison summary into the log where it cannot be lost.
+      - name: Roborazzi comparison summary (on failure)
+        if: failure()
+        run: |
+          for f in app/build/test-results/roborazzi/results-summary.json app/build/outputs/roborazzi/*.json; do
+            [ -f "$f" ] && { echo "== $f"; cat "$f"; echo; }
+          done
+          ls -la app/build/outputs/roborazzi 2>/dev/null | head -60
 
       - name: Assemble debug APK
         run: ./gradlew :app:assembleDebug

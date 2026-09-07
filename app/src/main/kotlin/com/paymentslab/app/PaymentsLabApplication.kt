@@ -2,6 +2,7 @@ package com.paymentslab.app
 
 import android.app.Application
 import androidx.work.Configuration
+import com.paymentslab.app.di.aiModule
 import com.paymentslab.app.work.PaymentReconciliationWorker
 import com.paymentslab.app.work.PaymentWorkerFactory
 import com.paymentslab.core.data.di.dataModule
@@ -10,6 +11,7 @@ import com.paymentslab.core.orchestration.di.orchestrationModule
 import com.paymentslab.feature.checkoutdemo.di.checkoutDemoModule
 import com.paymentslab.feature.history.di.historyModule
 import com.paymentslab.feature.home.di.homeModule
+import com.paymentslab.feature.lab.di.labAiModule
 import com.paymentslab.feature.lab.di.labModule
 import com.siddharth.kmp.common.CrashReporter
 import com.siddharth.kmp.common.NapierCrashReporter
@@ -92,6 +94,7 @@ class PaymentsLabApplication :
                 networkModule(PaymentApiConfig(BuildConfig.BACKEND_URL)),
                 orchestrationModule,
                 securityModule(securityConfig),
+                aiModule,
                 // providers (each contributes a PaymentGateway into the registry)
                 upiIntentModule,
                 razorpayModule,
@@ -178,6 +181,7 @@ class PaymentsLabApplication :
                 ),
                 // features
                 labModule,
+                labAiModule,
                 historyModule,
                 checkoutDemoModule,
                 homeModule,

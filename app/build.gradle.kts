@@ -65,7 +65,11 @@ android {
 
     defaultConfig {
         applicationId = "com.paymentslab.app"
-        minSdk = 24
+        // Bumped 24 -> 26 for this lane: :ai's on-device LLM tier (ML Kit GenAI / MediaPipe) ships
+        // an AndroidManifest with minSdkVersion 26 and the manifest merger hard-fails an app below
+        // that (HireSignal, the other family app on this AI stack, is minSdk 26 for the same
+        // reason). A real device-support change, not a version bump — see the PR body.
+        minSdk = 26
         targetSdk = 36
         ndk { abiFilters += setOf("arm64-v8a", "armeabi-v7a") } // drop emulator-only x86/x86_64
         versionCode = appBuildNumber
@@ -222,6 +226,13 @@ dependencies {
 
     // Security suite (Keystore store, FLAG_SECURE, device-integrity, pinning config)
     implementation("com.siddharth.kmp:security:1.0.0")
+
+    // AI seam: on-device LLM tier + cloud BYOK provider chain (AiModule.kt). :result is `implementation`
+    // inside :ai/:llm-chat themselves, so AiFailure/AiResult aren't visible transitively — declared
+    // directly here since NoBackendAiProvider names them in its own signature.
+    implementation("com.siddharth.kmp:ai:1.0.0")
+    implementation("com.siddharth.kmp:llm-chat:1.0.0")
+    implementation("com.siddharth.kmp:result:1.0.0")
 
     // Provider SDKs referenced directly by MainActivity's Activity-level callback wiring
     // (providers depend on these via `implementation`, so the types aren't transitive here).

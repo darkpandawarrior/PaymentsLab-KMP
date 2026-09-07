@@ -15,7 +15,7 @@ because a client-side `Success` is only ever a hint.
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Web-3DDC84)
 ![Ktor](https://img.shields.io/badge/Ktor-3.5.1-087CFA?logo=ktor&logoColor=white)
 <!-- AUTOGEN:badge -->
-![Modules](https://img.shields.io/badge/modules-40-success)
+![Modules](https://img.shields.io/badge/modules-44-success)
 <!-- /AUTOGEN:badge -->
 
 **[Highlights](#highlights)** · **[Screens & flows](#screens--flows)** · **[Architecture](#architecture)** · **[Getting started](#getting-started)** · **[Roadmap](#roadmap)**
@@ -52,7 +52,7 @@ because a client-side `Success` is only ever a hint.
 </details>
 
 <!-- AUTOGEN:stats -->
-> **At a glance**, **40-module** KMP architecture: **15 local** (7 core · 4 feature · 4 app/iOS/backend) + **25 composed** via `includeBuild(external/kmp-toolkit)` (6 shared core · 19 payment-provider gateways), **26** deterministic Roborazzi screenshots. *Numbers auto-generated from `settings.gradle.kts` by `scripts/gen-readme.sh`.*
+> **At a glance**, **44-module** KMP architecture: **15 local** (7 core · 4 feature · 4 app/iOS/backend) + **29 composed** via `includeBuild(external/kmp-toolkit)` (10 shared core · 19 payment-provider gateways), **26** deterministic Roborazzi screenshots. *Numbers auto-generated from `settings.gradle.kts` by `scripts/gen-readme.sh`.*
 <!-- /AUTOGEN:stats -->
 
 ## Why PaymentsLab-KMP

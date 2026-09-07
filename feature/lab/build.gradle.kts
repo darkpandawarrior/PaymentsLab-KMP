@@ -23,6 +23,11 @@ kotlin {
             implementation(project(":core:common"))
             implementation(libs.kotlinx.collections.immutable)
             implementation("com.siddharth.kmp:mvi-core:1.0.0")
+            // AiSettingsViewModel wraps the toolkit's AiSettingsState (from :designsystem, already
+            // pulled in via :core:designsystem's `api`) around ModelManager/OnDeviceLlm (:ai) and
+            // SecureKeyStore/ProviderId (:llm-chat).
+            implementation("com.siddharth.kmp:ai:1.0.0")
+            implementation("com.siddharth.kmp:llm-chat:1.0.0")
         }
         androidMain.dependencies {
             implementation(libs.lifecycle.runtime.compose)
