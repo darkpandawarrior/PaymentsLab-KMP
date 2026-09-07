@@ -85,6 +85,10 @@ subprojects {
 tasks.register("fastGate") {
     description = "ktlint + detekt + unit tests + coverage floor + dependency lock: the fast CI gate."
     dependsOn("ktlintCheck", "detekt", "koverVerify")
+    // `dependsOn("ktlintCheck", "detekt", ...)` above only binds the ROOT project's tasks — every
+    // subproject applies both plugins (see the `subprojects` block) but its tasks never ran in CI
+    // until they're wired in here too.
+    subprojects.forEach { sub -> dependsOn("${sub.path}:ktlintCheck", "${sub.path}:detekt") }
     findProject(":app")?.let {
         dependsOn(":app:dependencyGuard")
         // verifyRoborazziDebug runs :app's unit tests (incl. ScreenshotCatalogTest) AND fails the

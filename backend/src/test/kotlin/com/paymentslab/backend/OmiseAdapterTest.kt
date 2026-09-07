@@ -2,10 +2,10 @@ package com.paymentslab.backend
 
 import com.paymentslab.core.config.CredentialMode
 import com.paymentslab.core.config.GatewayCredentials
-import com.siddharth.kmp.paymentsapi.GatewayId
 import com.paymentslab.core.protocol.CatalogItemDto
 import com.paymentslab.core.protocol.PaymentStatusDto
 import com.paymentslab.core.protocol.VerifyRequest
+import com.siddharth.kmp.paymentsapi.GatewayId
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond

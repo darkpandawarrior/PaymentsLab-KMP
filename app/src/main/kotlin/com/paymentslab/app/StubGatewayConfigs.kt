@@ -53,6 +53,9 @@ val supaGhanaPayStubConfig =
         blurb = "Ghanaian mobile money aggregator — no public documentation or Android SDK found this session.",
     )
 
+/** Every stub/docs-only config wired into the app — see `ReadmeGatewayCountTest`. */
+val allStubGatewayConfigs = listOf(cybersourceStubConfig, selcomStubConfig, supaGhanaPayStubConfig)
+
 /** One [PaymentGateway] per [StubGatewayConfig] — mirrors `mobileMoneyModule`'s list-driven shape. */
 fun stubGatewayModule(configs: List<StubGatewayConfig>) =
     module {

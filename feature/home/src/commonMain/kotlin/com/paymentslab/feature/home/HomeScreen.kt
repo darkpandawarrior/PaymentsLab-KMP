@@ -24,11 +24,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.siddharth.kmp.designsystem.AnimatedCounter
 import com.paymentslab.core.designsystem.DesignTokens
 import com.paymentslab.core.designsystem.LabScaffold
 import com.paymentslab.core.designsystem.LocalReducedMotion
 import com.paymentslab.core.designsystem.PaymentsLabHeroGradient
+import com.siddharth.kmp.designsystem.AnimatedCounter
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import org.koin.compose.viewmodel.koinViewModel
 
