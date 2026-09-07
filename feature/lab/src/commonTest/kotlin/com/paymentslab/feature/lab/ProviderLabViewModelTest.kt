@@ -1,8 +1,10 @@
 package com.paymentslab.feature.lab
 
-import com.siddharth.kmp.common.UiText
 import com.paymentslab.core.designsystem.FlowHop
+import com.paymentslab.core.orchestration.fsm.PaymentPhase
+import com.siddharth.kmp.common.UiText
 import com.siddharth.kmp.designsystem.StepState
+import com.siddharth.kmp.paymentsapi.FailureCode
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.Money
 import com.siddharth.kmp.paymentsapi.PaymentResult
@@ -61,6 +63,66 @@ class ProviderLabViewModelTest {
         )
 
     private fun failScript(): List<PaymentStep> = listOf(PaymentStep.Errored(UiText.of("boom")))
+
+    private fun gatewayDeclineScript(): List<PaymentStep> =
+        listOf(
+            PaymentStep.OrderCreated(
+                orderId = "order_1",
+                amount = Money.inr(499),
+                payload = RedactedPayload.of("order", "order_id" to "order_1"),
+            ),
+            PaymentStep.Launching(gatewayId),
+            PaymentStep.ClientResult(
+                result =
+                    PaymentResult.Failure(
+                        code = FailureCode.GATEWAY_DECLINED,
+                        message = UiText.of("Card declined"),
+                        raw = RedactedPayload.of("razorpay_result", "code" to "2", "description" to "Card declined"),
+                    ),
+                payload = RedactedPayload.of("razorpay_result", "code" to "2", "description" to "Card declined"),
+            ),
+            PaymentStep.Verifying(),
+            PaymentStep.Settled(
+                status = PaymentStatus.FAILED,
+                snapshot = PaymentSnapshot("order_1", null, PaymentStatus.FAILED),
+                payload = RedactedPayload.of("settled", "status" to "FAILED"),
+            ),
+        )
+
+    // ── the FSM-grounded gateway failure feeding ErrorExplainer/ExplainerPanel ──────────────────────
+    @Test
+    fun serverConfirmedDecline_exposesGatewayFailure_groundedAtTerminalPhase() =
+        runTest {
+            val runner = FakePaymentFlowRunner(gatewayDeclineScript())
+            val vm = ProviderLabViewModel(runner)
+
+            vm.start(TestHost, gatewayId, "book")
+
+            val failure = vm.uiState.value.gatewayFailure
+            assertEquals(gatewayId, failure?.gatewayId)
+            assertEquals(FailureCode.GATEWAY_DECLINED, failure?.code)
+            assertEquals(
+                "Card declined",
+                failure
+                    ?.payload
+                    ?.entries
+                    ?.toMap()
+                    ?.get("description"),
+            )
+            // Server actually settled FAILED — the client's decline is now confirmed, not just a hint.
+            assertEquals(PaymentPhase.TERMINAL, failure?.phase)
+        }
+
+    @Test
+    fun successfulRun_exposesNoGatewayFailure() =
+        runTest {
+            val runner = FakePaymentFlowRunner(successScript())
+            val vm = ProviderLabViewModel(runner)
+
+            vm.start(TestHost, gatewayId, "book")
+
+            assertEquals(null, vm.uiState.value.gatewayFailure)
+        }
 
     // ── "Run again" after a failure reuses the SAME key (server dedups the retried order) ──────────
     @Test

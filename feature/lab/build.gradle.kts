@@ -28,6 +28,11 @@ kotlin {
             // SecureKeyStore/ProviderId (:llm-chat).
             implementation("com.siddharth.kmp:ai:1.0.0")
             implementation("com.siddharth.kmp:llm-chat:1.0.0")
+            // ErrorExplainer reads AiResult/AiFailure directly (streamRicher's AiChunk.Failed reason) —
+            // :ai and :llm-chat only depend on :result as `implementation`, so it isn't visible
+            // transitively; every direct consumer of AiFailure/AiResult declares its own dependency
+            // (see app/build.gradle.kts's AiModule.kt for the same pattern).
+            implementation("com.siddharth.kmp:result:1.0.0")
         }
         androidMain.dependencies {
             implementation(libs.lifecycle.runtime.compose)

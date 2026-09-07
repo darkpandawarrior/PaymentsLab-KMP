@@ -5,6 +5,7 @@ import com.paymentslab.core.orchestration.PaymentFlowRunner
 import com.paymentslab.feature.lab.LabHomeViewModel
 import com.paymentslab.feature.lab.ProviderLabViewModel
 import com.paymentslab.feature.lab.ai.AiSettingsViewModel
+import com.paymentslab.feature.lab.explain.ErrorExplainer
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -30,8 +31,13 @@ val labModule =
  * // ponytail: scoped-module split rather than adding iOS/web AI bindings with no UI consumer yet
  * (LabHomeScreen only wires the settings entry point on Android) — bind iOS's own onDeviceLlmModule
  * + SecureKeyStore actual and include this there once the settings screen is reachable on iOS too.
+ *
+ * [ErrorExplainer] lives here for the same reason: it needs the app's `List<AiProvider>` chain.
+ * `ProviderLabScreen` resolves it from the global Koin context and tolerates it being absent (web,
+ * iOS) — see its own KDoc — so this binding's absence there degrades gracefully rather than crashing.
  */
 val labAiModule =
     module {
         viewModel { AiSettingsViewModel(get(), get(), get(), get()) }
+        single { ErrorExplainer(get()) }
     }

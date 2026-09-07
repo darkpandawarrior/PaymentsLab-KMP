@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -23,12 +24,15 @@ import com.paymentslab.core.designsystem.PaymentFlowDiagram
 import com.paymentslab.core.designsystem.PrimaryButton
 import com.paymentslab.core.designsystem.SectionHeader
 import com.paymentslab.core.designsystem.ShieldPulse
-import com.siddharth.kmp.designsystem.StepTimeline
 import com.paymentslab.core.designsystem.SuccessBurst
+import com.paymentslab.feature.lab.explain.ErrorExplainer
+import com.paymentslab.feature.lab.explain.ExplainerPanel
+import com.siddharth.kmp.designsystem.StepTimeline
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentHost
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.context.GlobalContext
 
 /**
  * Stateful entry point for a provider's live lab. [paymentHost] is the platform payment host the
@@ -47,10 +51,16 @@ fun ProviderLabRoot(
     viewModel: ProviderLabViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    // Not every composition root wires an AI seam (the web preview and iOS don't) — resolved from
+    // the global Koin context rather than koinViewModel/koinInject so a missing binding degrades to
+    // null (deterministic-only explanations) instead of crashing. See labAiModule's own KDoc for why
+    // this binding is Android-only today.
+    val explainer = remember { GlobalContext.getOrNull()?.getOrNull<ErrorExplainer>() }
     ProviderLabScreen(
         state = state,
         providerName = providerName,
         priceLabel = priceLabel,
+        explainer = explainer,
         onPay = { viewModel.start(paymentHost, gatewayId, catalogItemId) },
         onBack = onBack,
         modifier = modifier,
@@ -69,6 +79,7 @@ fun ProviderLabScreen(
     onPay: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    explainer: ErrorExplainer? = null,
 ) {
     LabScaffold(title = providerName, onBack = onBack) { padding ->
         Column(
@@ -133,25 +144,40 @@ fun ProviderLabScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            state.finalStatus?.let { status ->
-                Column(
+            state.finalStatus?.let { status -> TerminalStatusBadge(status) }
+
+            state.gatewayFailure?.let { failure ->
+                ExplainerPanel(
+                    failure = failure,
+                    explainer = explainer,
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-                ) {
-                    if (status == PaymentStatus.SUCCESS || status == PaymentStatus.REFUNDED) {
-                        SuccessBurst()
-                    } else {
-                        FailureShake()
-                    }
-                    Text(
-                        text = "Final server status: ${status.name}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+                )
             }
         }
+    }
+}
+
+/** The settled-run readout: a success/failure sting plus the server's own terminal status name. */
+@Composable
+private fun TerminalStatusBadge(
+    status: PaymentStatus,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+    ) {
+        if (status == PaymentStatus.SUCCESS || status == PaymentStatus.REFUNDED) {
+            SuccessBurst()
+        } else {
+            FailureShake()
+        }
+        Text(
+            text = "Final server status: ${status.name}",
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }

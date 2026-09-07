@@ -8,17 +8,20 @@ import com.paymentslab.core.designsystem.FlowHop
 import com.paymentslab.core.designsystem.LaunchingCopy
 import com.paymentslab.core.designsystem.OrderCreatedCopy
 import com.paymentslab.core.designsystem.SettledCopy
-import com.siddharth.kmp.designsystem.StepState
 import com.paymentslab.core.designsystem.TimelineCopy
-import com.siddharth.kmp.designsystem.TimelineStep
 import com.paymentslab.core.designsystem.VerifyingCopy
 import com.paymentslab.core.designsystem.toTimelineStep
 import com.paymentslab.core.orchestration.PaymentFlowRunner
+import com.paymentslab.core.orchestration.fsm.PaymentPhase
+import com.paymentslab.feature.lab.explain.GatewayFailure
+import com.siddharth.kmp.designsystem.StepState
+import com.siddharth.kmp.designsystem.TimelineStep
+import com.siddharth.kmp.mvi.StateViewModel
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentHost
+import com.siddharth.kmp.paymentsapi.PaymentResult
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import com.siddharth.kmp.paymentsapi.PaymentStep
-import com.siddharth.kmp.mvi.StateViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -75,6 +78,8 @@ data class ProviderLabUiState(
     val steps: ImmutableList<TimelineStep> = persistentListOf(),
     val isRunning: Boolean = false,
     val finalStatus: PaymentStatus? = null,
+    /** The last client-reported gateway decline this run saw, if any — grounds [ExplainerPanel][com.paymentslab.feature.lab.explain.ExplainerPanel]. */
+    val gatewayFailure: GatewayFailure? = null,
     val hasRun: Boolean = false,
     /** Where the [PaymentFlowDiagram] packet currently sits — null until the first step lands. */
     val currentHop: FlowHop? = null,
@@ -130,6 +135,7 @@ class ProviderLabViewModel(
                         steps = accumulated.toTimeline(runInFlight = false),
                         isRunning = false,
                         finalStatus = terminal,
+                        gatewayFailure = accumulated.lastGatewayFailure(gatewayId, terminal),
                         // Clear on success (next run = new order); keep on failure so "Run again" retries
                         // the SAME order attempt and the server dedups it.
                         idempotencyKey = if (terminal == PaymentStatus.SUCCESS) null else idempotencyKey,
@@ -166,6 +172,31 @@ class ProviderLabViewModel(
             is PaymentStep.Errored -> PaymentStatus.FAILED
             else -> null
         }
+
+    /**
+     * The last client SDK decline this run saw, for [ErrorExplainer][com.paymentslab.feature.lab.explain.ErrorExplainer]
+     * to explain. Grounded per [PaymentFsm][com.paymentslab.core.orchestration.fsm]: a client
+     * [PaymentResult.Failure] always sends the FSM into [PaymentPhase.VERIFYING] (the server is
+     * asked to confirm it — see `PaymentReducer.onClientResult`); once the run's own [terminal]
+     * status actually settles as [PaymentStatus.FAILED], that decline is server-confirmed, so the
+     * grounding is upgraded to [PaymentPhase.TERMINAL].
+     *
+     * // ponytail: only covers a *client-reported* decline. A payment that fails purely server-side
+     * // (polling settles FAILED with no client Failure ever seen) has no FailureCode/raw payload to
+     * // explain and is deliberately left out — add a PaymentSnapshot-based path if that case turns
+     * // out to need one too.
+     */
+    private fun List<PaymentStep>.lastGatewayFailure(
+        gatewayId: GatewayId,
+        terminal: PaymentStatus?,
+    ): GatewayFailure? {
+        val clientFailure =
+            filterIsInstance<PaymentStep.ClientResult>().lastOrNull { it.result is PaymentResult.Failure }
+                ?: return null
+        val result = clientFailure.result as PaymentResult.Failure
+        val phase = if (terminal == PaymentStatus.FAILED) PaymentPhase.TERMINAL else PaymentPhase.VERIFYING
+        return GatewayFailure(gatewayId = gatewayId, code = result.code, payload = clientFailure.payload, phase = phase)
+    }
 
     private companion object {
         const val TAG = "ProviderLabViewModel"
