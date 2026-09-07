@@ -35,6 +35,7 @@ because a client-side `Success` is only ever a hint.
 - [Engineering decisions (the *why*)](#engineering-decisions-the-why)
 - [Provider status matrix](#provider-status-matrix)
 - [Screens & flows](#screens--flows)
+  - [AI-assisted explainers](#ai-assisted-explainers)
   - [Also runs on iOS](#also-runs-on-ios)
 - [Architecture](#architecture)
   - [System diagram](#system-diagram)
@@ -133,6 +134,14 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
 - 🔐 **VAPT-grade security suite.** `:security` (composed from `external/kmp-toolkit`), real Android Keystore AES-256-GCM at-rest
   encryption, `FLAG_SECURE` on payment screens (blocks screenshots/recording), device-integrity
   checks (root/Magisk, emulator, debugger), and a certificate-pinning config.
+- 🤖 **AI-assisted explainers, honest about the floor.** The provider lab's error panel and its
+  gateway-to-gateway flow comparison both work in two tiers: a deterministic explanation
+  (`GatewayStatusMapping`, `FlowDiff.compare`) that's always present, no network, no key, plus an
+  optional model-written elaboration streamed token by token from whichever `AiProvider` chain is
+  wired, on-device first (MediaPipe Gemma 3 1B, ML Kit Gemini Nano), then cloud BYOK. An **AI
+  settings** screen exposes consent, key entry and on-device model download; every raw third-party
+  payload is wrapped in `PromptGuard` before it reaches a model. Android only today, see
+  [AI-assisted explainers](#ai-assisted-explainers).
 - ♻️ **Pure, replayable state machine.** The lifecycle is a pure `(State, Event) -> Effects` reducer
   (zero coroutines/DI/IO); the orchestrator just executes its effects. A payment's path is a
   recorded event log that replays byte-for-byte identically, the auditing property money movement
@@ -273,6 +282,35 @@ Screenshots are generated on the JVM (Robolectric, no emulator) and committed to
 
 </details>
 
+### AI-assisted explainers
+
+Two features in the provider lab layer a model's elaboration on top of a deterministic floor that
+never needs one: an **error explainer** that expands a gateway's decline into plain language, and a
+**flow-diff** (the "Compare" entry in the lab's top bar) that explains why two gateways' recorded
+runs took different shapes, an extra leg, a webhook-only settlement, a differing terminal status.
+Both work the same way:
+
+1. **Deterministic first, always.** `GatewayStatusMapping`/`FlowDiff.compare` produce a
+   plain-English line with no suspension, no network, no key, the floor every platform gets,
+   the web preview and iOS included.
+2. **A streamed model elaboration on top, where a provider is wired.** `ErrorExplainer` and
+   `FlowDiffExplainer` ask whichever `AiProvider` chain the app bound (on-device first, then
+   cloud, see below) for 2-3 sentences of specific detail, token by token. Any raw third-party
+   text in the prompt, a gateway's own error payload, is wrapped in `PromptGuard` before it
+   reaches a model, so an adversarial payload can't be read as an instruction.
+
+An **AI settings** screen (the gear in the lab's top bar) makes the tradeoff explicit: a consent
+toggle, per-provider BYOK key entry backed by `SecureKeyStore`, and an on-device model manager that
+downloads/pauses/deletes MediaPipe's Gemma 3 1B (ML Kit Gemini Nano and OS-managed Foundation
+Models need no download). With no key and no downloaded model, every explainer still shows its
+deterministic line, nothing breaks, nothing pretends to be smarter than it is.
+
+**What's not there yet:** the settings gear and the AI provider chain are wired on Android only
+(`app/di/AiModule.kt`); iOS and the web preview render the deterministic tier alone. Neither the
+explainer panel nor the flow-diff screen has Roborazzi coverage yet, so their layout isn't
+screenshot-tested the way the rest of the redesign is, and neither has been exercised against a
+real model on a real device, only against fakes in `commonTest`.
+
 ### Also runs on iOS
 
 `ios/shared` packages the full 5-screen app, Home, Explore, provider lab, Checkout, Activity, the
@@ -404,13 +442,15 @@ app/ .../work/             PaymentReconciliationWorker — WorkManager process-d
 build-logic/               convention plugins (kmp.library / kmp.compose / cmp.feature / …)
 
 Composed via includeBuild("external/kmp-toolkit") + dependency substitution
-(25 modules — none of these have a local build.gradle.kts; the local core/security
+(29 modules — none of these have a local build.gradle.kts; the local core/security
 and provider/* directories are stale build/ cache left over from the extraction)
 ────────────────────────────────────────────────────────
 payments-api/              The frozen contract: PaymentGateway, PaymentResult, PaymentHost,
                            PaymentBackend, PendingPaymentJournal, PaymentStep, Redactor   (KMP + jvm)
 security/                  Keystore AES-256-GCM store, FLAG_SECURE, device-integrity, pinning config
 common/, mvi-core/, network/, designsystem/     shared KMP infra (see Shared infrastructure)
+result/, ai/, ai-testing/, llm-chat/            AiResult/AiFailure/PromptGuard, the on-device LLM
+                           tier, its fakes, and the cloud BYOK provider chain (see AI-assisted explainers)
 provider/
   razorpay/ cashfree/ upi-intent/ stripe/ googlepay/ square/ omise/  one module per native SDK
   hosted-webview/          generic archetype for SDK-less, redirect-and-return-URL gateways (47)
@@ -458,6 +498,7 @@ copy-pasted boilerplate; a fix in either repo flows into every consumer.
 |---|---|---|
 | **`kmp-build-logic`** | The convention plugins (`kmp.library`, `kmp.compose`, `cmp.feature`, …) that keep every module configured identically. Included in `pluginManagement` so every module applies them by id. | `settings.gradle.kts` → `includeBuild("external/kmp-build-logic")` |
 | **`kmp-mvi-core`** (published as `com.siddharth.kmp:mvi-core`) | The `State`/`Event`/`Effect` MVI runtime the four `feature:*` modules build their ViewModels on. Substituted from the `:mvi-core` module of the kmp-toolkit monorepo at build time. | `settings.gradle.kts` → `includeBuild("external/kmp-toolkit")`; consumed by `feature:home`, `feature:lab`, `feature:checkout-demo`, `feature:history` |
+| **The AI stack** (`:result`, `:ai`, `:llm-chat`, published as `com.siddharth.kmp:ai`/`:llm-chat`) | `AiResult`/`AiFailure`/`PromptGuard`, the on-device LLM tier (MediaPipe, ML Kit GenAI) and the cloud BYOK provider chain the lab's error explainer, flow-diff and AI settings screen all build on. | Same `includeBuild`; consumed by `app` (`AiModule.kt`) and `feature:lab` (see [AI-assisted explainers](#ai-assisted-explainers)) |
 
 This is the point of the split: the payments domain lives here, the reusable KMP scaffolding lives
 once, upstream, and both this repo and its sibling stay on the same foundation without drift.
@@ -510,7 +551,7 @@ The gateway catalog + explained-checkout demo also run in the browser, `:web` is
 Kotlin/Wasm Compose shell over the same feature modules, orchestrator FSM and hosted-webview
 archetype, with in-memory `PaymentBackend`/`PendingPaymentJournal` fakes instead of `:backend`
 (so everything is `MOCK_MODE` by construction, no keys, no server). This build is what the
-portfolio site embeds as `public/paymentslab-app/` (same packaging as Kursi's `cmp-web`).
+portfolio site embeds as `public/paymentslab-app/` (same packaging as Gaddi's `cmp-web`).
 
 ```bash
 # Dev loop with hot reload
@@ -610,11 +651,13 @@ gateway auto-degrades to `MOCK_MODE`; set → it upgrades to real, no code chang
   `external/kmp-toolkit`'s `:payments-api` module, pulled in via `includeBuild` + dependency
   substitution alongside `:security`, `:common`, `:mvi-core`, `:network`, `:designsystem` and all
   19 provider gateways (see [Module map](#module-map))
-- Fix `scripts/gen-readme.sh`, the AUTOGEN stats block silently went stale after the provider
-  extraction because `grep -c '^include(":provider:'` returns exit 1 on zero matches under `set -e`
 - Expand `GatewayBranding`'s curated real-logo tier beyond the current 8 (the other 58 gateways
   render a generated monogram today, accurate, not broken, but a growing real-logo set would be
   nice)
+- Wire the AI provider chain and its settings screen on iOS and the web preview, both currently
+  render the deterministic explainer/flow-diff tier only (see
+  [AI-assisted explainers](#ai-assisted-explainers)); add Roborazzi coverage for the explainer
+  panel, flow-diff screen and AI settings screen once that lands
 
 ## iOS readiness
 
