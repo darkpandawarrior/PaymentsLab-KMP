@@ -74,6 +74,72 @@ class BackendTest {
             assertTrue(order.providerParams["key_id"]!!.startsWith("rzp_test_"))
         }
 
+    // ── Test 1b: Flutterwave now has a registered adapter — `POST /orders` no longer 400s ─────────
+    @Test
+    fun `flutterwave order creation succeeds and returns a checkout_url`() =
+        testApplication {
+            application { module() }
+            val resp =
+                client.post("/orders") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        json.encodeToString(
+                            CreateOrderRequest(
+                                catalogItemId = "coffee_149",
+                                gatewayId = "flutterwave",
+                                idempotencyKey = "idem_flutterwave_1",
+                            ),
+                        ),
+                    )
+                }
+            assertEquals(HttpStatusCode.OK, resp.status)
+            val order = decode<OrderResponse>(resp.bodyAsText())
+            assertEquals("flutterwave", order.gatewayId)
+            assertTrue(
+                order.providerParams["checkout_url"]!!.contains("/mock/checkout/flutterwave"),
+            )
+        }
+
+    // ── Test 1c: Stripe order creation + STUB verify end-to-end through the real routes ───────────
+    @Test
+    fun `stripe order creation returns a client secret and verify honors the stub marker`() =
+        testApplication {
+            application { module() }
+            val createResp =
+                client.post("/orders") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        json.encodeToString(
+                            CreateOrderRequest(
+                                catalogItemId = "coffee_149",
+                                gatewayId = "stripe",
+                                idempotencyKey = "idem_stripe_1",
+                            ),
+                        ),
+                    )
+                }
+            assertEquals(HttpStatusCode.OK, createResp.status)
+            val order = decode<OrderResponse>(createResp.bodyAsText())
+            assertTrue(order.providerParams["client_secret"]!!.startsWith("pi_"))
+            assertTrue(order.providerParams.containsKey("publishable_key"))
+
+            val verifyResp =
+                client.post("/payments/${order.orderId}/verify") {
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        json.encodeToString(
+                            VerifyRequest(
+                                gatewayId = "stripe",
+                                orderId = order.orderId,
+                                extra = mapOf("marker" to "succeeded"),
+                            ),
+                        ),
+                    )
+                }
+            assertEquals(HttpStatusCode.OK, verifyResp.status)
+            assertEquals(PaymentStatusDto.SUCCESS, decode<VerifyResponse>(verifyResp.bodyAsText()).status)
+        }
+
     // ── Test 2: Razorpay verify — real HMAC SUCCESS vs wrong-signature FAILED ────────────────────
     @Test
     fun `razorpay verify succeeds with correct HMAC and fails with wrong signature`() =

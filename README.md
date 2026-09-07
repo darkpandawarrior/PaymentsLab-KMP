@@ -100,7 +100,7 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
   once, charge later by id), **marketplace Connect onboarding** (`/connect`, sub-merchant KYC + split
   payouts), and an **internal double-entry wallet ledger** (`/wallet`, seed / debit / refund against a
   real running balance), plus **split payments**, a two-leg orchestration that compensates if one leg
-  fails. Ten new provider modules ride these rails, Paystack, Flutterwave, Paytm, Xendit, M-Pesa,
+  fails. Nine new provider modules ride these rails, Paystack, Flutterwave, Paytm, Xendit, M-Pesa,
   Peach and NMI, plus a `wallet` balance rail and a `cash` record-only gateway, every one honest
   `MOCK_MODE` until real sandbox keys are set. Each rail is idempotency-keyed like the pay-in path.
 - 🔌 **One contract, seven real SDKs, plus two generic archetypes.** Razorpay, Cashfree, Stripe
