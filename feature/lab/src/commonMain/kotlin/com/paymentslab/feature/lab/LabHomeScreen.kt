@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -51,6 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LabHomeRoot(
     onOpenProvider: (GatewayId) -> Unit,
     onOpenSettings: (() -> Unit)? = null,
+    onOpenFlowDiff: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     viewModel: LabHomeViewModel = koinViewModel(),
 ) {
@@ -63,6 +65,7 @@ fun LabHomeRoot(
         onClearFilters = viewModel::onClearFilters,
         onOpenProvider = onOpenProvider,
         onOpenSettings = onOpenSettings,
+        onOpenFlowDiff = onOpenFlowDiff,
         modifier = modifier,
     )
 }
@@ -73,6 +76,7 @@ fun LabHomeScreen(
     state: LabHomeUiState,
     onOpenProvider: (GatewayId) -> Unit,
     onOpenSettings: (() -> Unit)? = null,
+    onOpenFlowDiff: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     onSearchQueryChange: (String) -> Unit = {},
     onToggleStatusFilter: (GatewayStatusUi) -> Unit = {},
@@ -84,16 +88,7 @@ fun LabHomeScreen(
 
     LabScaffold(
         title = "Integration Lab",
-        actions = {
-            // Only Android wires a real onOpenSettings today (AiSettingsViewModel needs
-            // ModelManager/OnDeviceLlm/SecureKeyStore, unbound on iOS/web) — render the gear
-            // only where it does something, rather than showing dead chrome everywhere.
-            if (onOpenSettings != null) {
-                IconButton(onClick = onOpenSettings) {
-                    Icon(Icons.Filled.Settings, contentDescription = "AI settings")
-                }
-            }
-        },
+        actions = { LabHomeActions(onOpenFlowDiff, onOpenSettings) },
     ) { padding ->
         LazyColumn(
             modifier =
@@ -159,6 +154,29 @@ fun LabHomeScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+/**
+ * The top-bar actions: an optional "Compare" entry to [FlowDiffScreen][com.paymentslab.feature.lab.explain.FlowDiffScreen]
+ * and the AI-settings gear, each rendered only when its handler is wired — same gating rationale
+ * as [onOpenSettings]'s own KDoc below, so neither ever shows a dead control.
+ */
+@Composable
+private fun RowScope.LabHomeActions(
+    onOpenFlowDiff: (() -> Unit)?,
+    onOpenSettings: (() -> Unit)?,
+) {
+    if (onOpenFlowDiff != null) {
+        TextButton(onClick = onOpenFlowDiff) { Text("Compare") }
+    }
+    // Only Android wires a real onOpenSettings today (AiSettingsViewModel needs
+    // ModelManager/OnDeviceLlm/SecureKeyStore, unbound on iOS/web) — render the gear
+    // only where it does something, rather than showing dead chrome everywhere.
+    if (onOpenSettings != null) {
+        IconButton(onClick = onOpenSettings) {
+            Icon(Icons.Filled.Settings, contentDescription = "AI settings")
         }
     }
 }
