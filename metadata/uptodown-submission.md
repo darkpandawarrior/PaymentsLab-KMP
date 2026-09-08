@@ -1,4 +1,4 @@
-# Uptodown submission — PaymentsLab
+# Uptodown submission — PaymentsLab-KMP
 
 ## Verdict: worth doing
 
@@ -9,7 +9,7 @@ Uptodown identity-verifies registering developers, which puts it at a 100/100 tr
 malware/phishing blacklist hits (source:
 [mywot.com/scorecard/uptodown.com](https://www.mywot.com/scorecard/uptodown.com)). That's the
 opposite of the reputational profile that ruled out APKPure for this app family — see the channel
-verdict summary for the comparison. PaymentsLab bundles real payment-gateway SDKs (Razorpay,
+verdict summary for the comparison. PaymentsLab-KMP bundles real payment-gateway SDKs (Razorpay,
 Cashfree, Stripe, Play Services Wallet) on purpose as a portfolio demo, not a live transactional
 product — say that plainly in the listing, same as the F-Droid metadata already does.
 
@@ -37,7 +37,7 @@ product — say that plainly in the listing, same as the F-Droid metadata alread
    `https://github.com/darkpandawarrior/PaymentsLab/releases/download/v2026.08.35.1.174/PaymentsLab-v2026.08.35.1.174.apk`
    (signing cert SHA-256: `e3cd9ed25baaa6db5501621a2a7399edc0878022f9b64b5d95446db0348dd19c` — verify
    with `apksigner verify --print-certs` before uploading).
-4. Icon: Uptodown wants a square PNG, ≥256×256, corners rounded by the site itself. PaymentsLab
+4. Icon: Uptodown wants a square PNG, ≥256×256, corners rounded by the site itself. PaymentsLab-KMP
    ships an adaptive icon (no static PNG in source) — export it with Android Studio's Image Asset
    tool, or unzip the signed APK above and take `res/mipmap-xxxhdpi-v4/ic_launcher.png`.
 5. Screenshots: vertical/portrait preferred. Reuse the existing set at
@@ -55,7 +55,7 @@ product — say that plainly in the listing, same as the F-Droid metadata alread
 
 **Title**
 ```
-PaymentsLab
+PaymentsLab-KMP
 ```
 
 **Short description**
@@ -65,7 +65,7 @@ One PaymentGateway API, seven real gateway SDKs behind it. A dev demo.
 
 **Full description** (trim if the form enforces a shorter limit than this — not confirmed)
 ```
-PaymentsLab bundles proprietary payment gateway SDKs: Razorpay, Cashfree, Stripe, and Google Play Services Wallet. That is by design. This app exists to demonstrate real integration work against real gateway SDKs, not to be a free-software-only artifact. Read that up front and decide if that is acceptable to you before installing.
+PaymentsLab-KMP bundles proprietary payment gateway SDKs: Razorpay, Cashfree, Stripe, and Google Play Services Wallet. That is by design. This app exists to demonstrate real integration work against real gateway SDKs, not to be a free-software-only artifact. Read that up front and decide if that is acceptable to you before installing.
 
 What it is: a single PaymentGateway contract implemented seven times over, once per native gateway SDK: Razorpay, Cashfree, Stripe, Google Pay (via Play Services Wallet, riding Stripe as the processor), Square, Omise, and a raw UPI intent flow. Two generic archetypes, hosted-webview redirect and mobile-money confirm-on-phone, cover a much larger catalog of other gateways behind the same interface, but those seven are the ones with a real native SDK underneath. The app picks a gateway, builds a checkout request through the shared interface, and the concrete adapter handles that gateway's own SDK calls, tokens, and callback shapes. A Ktor backend module does the server side of the flow: HMAC request signing and webhook signature verification, so the client never holds a raw API secret.
 
