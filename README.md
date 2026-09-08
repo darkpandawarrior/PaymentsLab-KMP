@@ -552,7 +552,7 @@ The gateway catalog + explained-checkout demo also run in the browser, `:web` is
 Kotlin/Wasm Compose shell over the same feature modules, orchestrator FSM and hosted-webview
 archetype, with in-memory `PaymentBackend`/`PendingPaymentJournal` fakes instead of `:backend`
 (so everything is `MOCK_MODE` by construction, no keys, no server). This build is what the
-portfolio site embeds as `public/paymentslab-app/` (same packaging as Gaddi's `cmp-web`).
+portfolio site embeds as `heavy/paymentslab-app/` (same packaging as Gaddi's `cmp-web`).
 
 ```bash
 # Dev loop with hot reload
