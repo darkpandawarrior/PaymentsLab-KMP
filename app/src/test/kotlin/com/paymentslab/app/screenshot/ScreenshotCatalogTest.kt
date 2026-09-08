@@ -83,7 +83,10 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 // Plain Application (not PaymentsLabApplication) — these render pure design-system composables and
 // must not boot the real Koin graph (which would throw "already started" across tests).
-@Config(sdk = [34], application = android.app.Application::class)
+// qualifiers pins the effective screen width at the default 320dp (Robolectric's stock default,
+// unchanged) but swaps density from the default mdpi (1x) to xxhdpi (3x) — same dp layout, 3x the
+// pixels, so docs/screenshots/*.png go from 320px to ~960px wide without moving anything on screen.
+@Config(sdk = [34], application = android.app.Application::class, qualifiers = "w320dp-xxhdpi")
 class ScreenshotCatalogTest {
     @get:Rule
     val compose = createComposeRule()
