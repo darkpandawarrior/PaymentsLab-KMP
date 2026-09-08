@@ -1,19 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320">
-<rect width="1280" height="320" fill="#0A0D0C"/>
-<g style="color:#A78BFA">
-<g stroke-linecap="round" stroke-linejoin="round">
-  <line x1="85" y1="125" x2="85" y2="155" stroke="currentColor" stroke-width="5" fill="none"/>
-  <line x1="100" y1="125" x2="100" y2="155" stroke="currentColor" stroke-width="5" fill="none"/>
-  <line x1="115" y1="125" x2="115" y2="155" stroke="currentColor" stroke-width="5" fill="none"/>
-  <line x1="130" y1="125" x2="130" y2="155" stroke="currentColor" stroke-width="5" fill="none"/>
-  <line x1="145" y1="125" x2="145" y2="155" stroke="currentColor" stroke-width="5" fill="none"/>
-  <line x1="160" y1="125" x2="160" y2="155" stroke="currentColor" stroke-width="5" fill="none"/>
-  <line x1="80" y1="165" x2="160" y2="165" stroke="currentColor" stroke-width="10" fill="none"/>
-  <line x1="120" y1="165" x2="120" y2="195" stroke="currentColor" stroke-width="10" fill="none"/>
-  <line x1="80" y1="175" x2="160" y2="175" stroke="currentColor" stroke-width="5" fill="none"/>
-  <circle cx="120" cy="195" r="7.5" fill="currentColor" stroke="none"/>
-</g>
-</g>
-<text x="210" y="160" dominant-baseline="central" font-family="'Space Grotesk', sans-serif" font-weight="600" font-size="83.33" letter-spacing="-0.83" fill="#F7F5F1">PaymentsLab-KMP</text>
-<text x="210" y="214.3" dominant-baseline="central" font-family="'JetBrains Mono', monospace" font-weight="400" font-size="28.8" letter-spacing="4.61" fill="#F7F5F1" opacity="0.72">PAYMENTS INTEGRATION LAB</text>
+<svg width="900" height="170" viewBox="0 0 900 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pl-title pl-desc">
+  <title id="pl-title">PaymentsLab-KMP</title>
+  <desc id="pl-desc">An integration lab for the Android payments ecosystem — a client hint travels to the server, which confirms with a shield of verified truth.</desc>
+  <defs>
+    <linearGradient id="pl-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <linearGradient id="pl-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="1" y="1" width="898" height="168" rx="16" fill="url(#pl-bg)" stroke="#30363d" stroke-width="1"/>
+
+  <text x="450" y="80" text-anchor="middle" font-family="'Segoe UI', system-ui, -apple-system, sans-serif" font-size="52" font-weight="800" fill="url(#pl-grad)">
+    PaymentsLab-KMP
+  </text>
+
+  <!-- client -> server verification: a hint travels from client to server, confirmed by a shield -->
+  <line x1="120" y1="122" x2="780" y2="122" stroke="url(#pl-grad)" stroke-width="2" opacity="0.35"/>
+
+  <rect x="100" y="108" width="40" height="28" rx="4" fill="none" stroke="#EC4899" stroke-width="2"/>
+  <text x="120" y="127" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#EC4899">C</text>
+
+  <rect x="760" y="108" width="40" height="28" rx="4" fill="none" stroke="#7C3AED" stroke-width="2"/>
+  <text x="780" y="127" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" fill="#7C3AED">S</text>
+
+  <circle id="pl-packet" cx="760" cy="122" r="5" fill="#EC4899"/>
+
+  <!-- shield confirmation at the server -->
+  <path id="pl-shield" d="M 780 106 L 792 111 L 792 122 C 792 131 786 138 780 141 C 774 138 768 131 768 122 L 768 111 Z"
+        fill="none" stroke="#7C3AED" stroke-width="2"/>
+
+  <text x="450" y="155" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" letter-spacing="2" fill="#94a3b8">
+    A CLIENT SUCCESS IS A HINT — THE SERVER IS TRUTH
+  </text>
 </svg>
