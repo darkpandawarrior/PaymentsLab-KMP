@@ -1,6 +1,6 @@
 name: Deploy to Play Store
 
-# Manual release orchestration onto Play, mirroring Mileway/Kursi's rung pattern. Protected rungs
+# Manual release orchestration onto Play, mirroring Doori/Gaddi's rung pattern. Protected rungs
 # run in a GitHub Environment with required reviewers (configure in repo Settings → Environments).
 # All credentials are env-activated placeholders — the job is inert until they are set.
 
@@ -49,9 +49,8 @@ jobs:
           # versionCode derives from `git rev-list --count HEAD`. A shallow clone
           # reports 1, which silently produced versionCode 2 on every published APK.
           fetch-depth: 0
-        if: env.HAS_SECRET == 'true'
-        with:
           submodules: recursive
+        if: env.HAS_SECRET == 'true'
 
       - name: Set up JDK 21
         if: env.HAS_SECRET == 'true'

@@ -1,5 +1,5 @@
 # github-release.yml — tag-triggered GitHub Release (changelog + debug/release artifacts + iOS IPA).
-# Adapted from Mileway's proven template (post PR #42; see docs/RELEASE.md). Distinct from
+# Adapted from Doori's (formerly Mileway) proven template (post PR #42; see docs/RELEASE.md). Distinct from
 # release.yml (that one runs the verification gate + publishes an unsigned APK on the same tag
 # push, softprops/action-gh-release). This one is the three-tier-versioning-aware release: it
 # creates/updates the SAME GitHub Release object (idempotent gh release create/edit), attaches every
