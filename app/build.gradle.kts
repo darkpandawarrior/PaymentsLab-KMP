@@ -175,6 +175,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:data"))
     implementation(project(":core:designsystem"))
+    implementation(project(":core:gateway-catalog"))
 
     // Providers
     implementation("com.siddharth.kmp:upi-intent:1.0.0")

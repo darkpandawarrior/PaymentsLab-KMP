@@ -120,6 +120,8 @@ include(":core:orchestration")
 include(":core:network")
 include(":core:data")
 include(":core:designsystem")
+// Plain gateway data lists, lifted out of app/src/main so iOS reads the same catalog as Android.
+include(":core:gateway-catalog")
 // :core:security extracted to kmp-toolkit's :security module (external/kmp-toolkit) — consumed as
 // com.siddharth.kmp:security via the includeBuild substitution above.
 

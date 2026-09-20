@@ -8,7 +8,7 @@ import com.siddharth.kmp.provider.hostedwebview.ReturnUrlMatchers
 
 /**
  * The web preview's gateway list — a representative regional slice of the Android app's ~46-row
- * hosted catalog (`app/HostedGatewayConfigs.kt`), following the per-entry-point-config precedent
+ * hosted catalog (`core/gateway-catalog/.../HostedGatewayConfigs.kt`), following the per-entry-point-config precedent
  * set by `ios/shared/IosGatewayConfigs.kt`. Everything is MOCK_MODE by construction: the browser
  * build has no backend and no sandbox keys, so every run is the simulated end-to-end lifecycle.
  */
