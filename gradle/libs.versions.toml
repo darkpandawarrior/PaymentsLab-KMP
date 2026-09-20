@@ -29,7 +29,7 @@ lifecycle = "2.12.0-alpha03"
 workmanager = "2.12.0-rc01"
 kmpworkmanager = "3.3.1"
 jbNavigationCompose = "2.10.0-beta01"
-coil3 = "3.5.0"
+coil3 = "3.6.3"
 compose-webview-multiplatform = "2.0.3"
 
 # Networking (KMP client + JVM server)
