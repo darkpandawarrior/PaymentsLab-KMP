@@ -399,7 +399,7 @@
 			repositoryURL = "https://github.com/stripe/stripe-ios";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 26.1.0;
+				minimumVersion = 26.11.0;
 			};
 		};
 		1A0000000000000000000028 /* XCRemoteSwiftPackageReference "razorpay-pod" */ = {

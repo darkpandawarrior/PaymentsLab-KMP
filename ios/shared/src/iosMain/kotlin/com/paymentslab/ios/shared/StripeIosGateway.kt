@@ -19,7 +19,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  * Stripe on iOS — the native-SDK counterpart to Android's `provider:stripe` `StripeGateway`,
  * proving that gateway's Android-only status was a scoping choice (the Android module wraps
  * Stripe's Android SDK types directly, with no iOS target) and not a platform limitation: Stripe
- * genuinely ships a real iOS SDK (`stripe-ios` 26.1.0, via SPM), same as the Android one.
+ * genuinely ships a real iOS SDK (`stripe-ios` 26.11.0, via SPM), same as the Android one.
  *
  * The actual `PaymentSheet` call lives in Swift ([StripeCheckoutHost]'s implementation,
  * `StripeCheckoutHostImpl.swift`) since Kotlin/Native can't cinterop against a Swift-only
