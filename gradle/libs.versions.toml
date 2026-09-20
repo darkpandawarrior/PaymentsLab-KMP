@@ -2,11 +2,11 @@
 agp = "9.5.0-alpha06"
 kotlin = "2.4.20"
 ksp = "2.3.12"
-compose-multiplatform = "1.12.0-rc01"
-foundation = "1.12.0-beta01"
-runtime = "1.12.0-beta01"
-ui = "1.12.0-beta01"
-material3 = "1.12.0-alpha03"
+# Every org.jetbrains.compose.* artifact MUST carry this exact string (version.ref =
+# "compose-multiplatform"), not a hand-typed copy. A lower pin loses to the plugin on Gradle's
+# highest-wins and silently goes inert; that drift is what broke :app:dependencyGuard elsewhere
+# in this family. EXCEPTION: material-icons-extended is not on this train (frozen at 1.7.3).
+compose-multiplatform = "1.13.0-alpha01"
 materialIconsExtended = "1.7.3"
 compose-bom = "2026.08.00"
 
@@ -65,13 +65,13 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 
 # Compose Multiplatform
-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "foundation" }
-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "runtime" }
-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "ui" }
-ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "ui" }
-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "foundation" }
+components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 
 # Compose (Android view of BOM, for provider/app android-only surfaces + tooling)
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
