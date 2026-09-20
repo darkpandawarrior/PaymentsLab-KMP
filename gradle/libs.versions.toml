@@ -34,7 +34,7 @@ compose-webview-multiplatform = "2.0.3"
 
 # Networking (KMP client + JVM server)
 ktor = "3.6.0"
-logback = "1.5.38"
+logback = "1.6.3"
 
 # Payment provider SDKs (Android-only, live in provider:* androidMain)
 razorpay = "1.6.41"
