@@ -339,6 +339,13 @@ equivalent at all, Apple Pay is a separate Apple product, not a Google Pay port.
 | Omise | `OmiseSDK` manual tokenization (SPM, `5.6.3`) | [omise-ios.md](docs/providers/omise-ios.md) |
 | Square | `SQIPCardEntryViewController` (CocoaPods, `1.6.7`, no SPM distribution exists) | [square-ios.md](docs/providers/square-ios.md) |
 
+**And the catalog itself is now the same list on both platforms.** The gateway configs, plain data
+with no `android.*` import anywhere in them, used to live in `app/src/main/`, which made them
+structurally invisible to iOS; `ios/shared` compensated with a hand-maintained 5-row slice. They now
+live in `:core:gateway-catalog`'s `commonMain`, so both composition roots read the identical 44
+hosted-webview + 7 mobile-money + 3 stub + 1 wallet rows. iOS adds two generic-archetype fallbacks
+of its own (`paystack`, `mpesa`) for gateways Android serves from an Android-only native module.
+
 <div align="center">
 <img src="docs/screenshots/ios_catalog_all_native.png" alt="Stripe, Razorpay, Cashfree, Omise and Square all showing in the iOS catalog, real SDKs linked" width="320" />
 </div>
