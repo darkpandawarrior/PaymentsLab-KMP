@@ -28,7 +28,9 @@ import org.koin.dsl.module
  * the wasm-capable slice is wired: the shared `:core:gateway-catalog` hosted-webview + stub lists
  * (the same 44 + 3 rows Android and iOS read) over in-memory backend/journal fakes. The
  * mobile-money and wallet archetypes are absent because their provider modules publish no wasmJs
- * target, not because the browser could not show them. The feature modules' own Koin modules (`labModule`/`checkoutDemoModule`) are redeclared
+ * target, not because the browser could not show them.
+ *
+ * The feature modules' own Koin modules (`labModule`/`checkoutDemoModule`) are redeclared
  * here rather than imported: the checkout ViewModel needs the widened MOCK_MODE gateway filter,
  * and the lab module would otherwise double-register the same [PaymentFlowRunner] binding.
  */
