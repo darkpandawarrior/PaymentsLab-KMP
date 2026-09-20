@@ -27,7 +27,7 @@ core-ktx = "1.19.0"
 activity-compose = "1.14.0-alpha02"
 lifecycle = "2.12.0-alpha03"
 workmanager = "2.12.0-rc01"
-kmpworkmanager = "3.3.1"
+kmpworkmanager = "3.5.0"
 jbNavigationCompose = "2.10.0-beta01"
 coil3 = "3.6.3"
 compose-webview-multiplatform = "2.0.3"
@@ -51,7 +51,7 @@ roborazzi = "1.74.0"
 
 # Code quality + build health
 detekt = "2.0.0-alpha.6"
-kover = "0.9.8"
+kover = "0.9.9"
 ktlint-plugin = "14.2.0"
 dependency-guard = "0.5.0"
 
