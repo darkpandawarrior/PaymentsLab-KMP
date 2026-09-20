@@ -33,7 +33,7 @@ coil3 = "3.5.0"
 compose-webview-multiplatform = "2.0.3"
 
 # Networking (KMP client + JVM server)
-ktor = "3.5.1"
+ktor = "3.6.0"
 logback = "1.5.38"
 
 # Payment provider SDKs (Android-only, live in provider:* androidMain)
