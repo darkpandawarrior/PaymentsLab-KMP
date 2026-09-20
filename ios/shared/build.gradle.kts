@@ -39,6 +39,7 @@ kotlin {
             // The shared gateway catalog — the same 55 config-driven rows the Android app reads,
             // instead of the 5-row hand-maintained slice this module used to carry.
             implementation(project(":core:gateway-catalog"))
+            implementation(project(":core:gateway-catalog-nonweb"))
             implementation("com.siddharth.kmp:hosted-webview:1.0.0")
             implementation("com.siddharth.kmp:mobile-money:1.0.0")
             implementation("com.siddharth.kmp:wallet:1.0.0")

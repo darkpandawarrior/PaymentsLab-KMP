@@ -15,7 +15,7 @@ because a client-side `Success` is only ever a hint.
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Web-3DDC84)
 ![Ktor](https://img.shields.io/badge/Ktor-3.5.1-087CFA?logo=ktor&logoColor=white)
 <!-- AUTOGEN:badge -->
-![Modules](https://img.shields.io/badge/modules-44-success)
+![Modules](https://img.shields.io/badge/modules-46-success)
 <!-- /AUTOGEN:badge -->
 
 **[Highlights](#highlights)** · **[Screens & flows](#screens--flows)** · **[Architecture](#architecture)** · **[Getting started](#getting-started)** · **[Roadmap](#roadmap)**
@@ -53,7 +53,7 @@ because a client-side `Success` is only ever a hint.
 </details>
 
 <!-- AUTOGEN:stats -->
-> **At a glance**, **44-module** KMP architecture: **15 local** (7 core · 4 feature · 4 app/iOS/backend) + **29 composed** via `includeBuild(external/kmp-toolkit)` (10 shared core · 19 payment-provider gateways), **26** deterministic Roborazzi screenshots. *Numbers auto-generated from `settings.gradle.kts` by `scripts/gen-readme.sh`.*
+> **At a glance**, **46-module** KMP architecture: **17 local** (9 core · 4 feature · 4 app/iOS/backend) + **29 composed** via `includeBuild(external/kmp-toolkit)` (10 shared core · 19 payment-provider gateways), **26** deterministic Roborazzi screenshots. *Numbers auto-generated from `settings.gradle.kts` by `scripts/gen-readme.sh`.*
 <!-- /AUTOGEN:stats -->
 
 ## Why PaymentsLab-KMP
@@ -339,12 +339,15 @@ equivalent at all, Apple Pay is a separate Apple product, not a Google Pay port.
 | Omise | `OmiseSDK` manual tokenization (SPM, `5.6.3`) | [omise-ios.md](docs/providers/omise-ios.md) |
 | Square | `SQIPCardEntryViewController` (CocoaPods, `1.6.7`, no SPM distribution exists) | [square-ios.md](docs/providers/square-ios.md) |
 
-**And the catalog itself is now the same list on both platforms.** The gateway configs, plain data
+**And the catalog itself is now the same list on every platform.** The gateway configs, plain data
 with no `android.*` import anywhere in them, used to live in `app/src/main/`, which made them
-structurally invisible to iOS; `ios/shared` compensated with a hand-maintained 5-row slice. They now
-live in `:core:gateway-catalog`'s `commonMain`, so both composition roots read the identical 44
-hosted-webview + 7 mobile-money + 3 stub + 1 wallet rows. iOS adds two generic-archetype fallbacks
-of its own (`paystack`, `mpesa`) for gateways Android serves from an Android-only native module.
+structurally invisible to the other targets; `ios/shared` compensated with a hand-maintained 5-row
+slice and `:web` with a 13-row one. They now live in `commonMain`, split only by which targets their
+provider module actually publishes: `:core:gateway-catalog` (44 hosted-webview + 3 stub) carries
+android + ios + wasmJs, `:core:gateway-catalog-nonweb` (7 mobile-money + 1 wallet) carries android +
+ios because those two providers ship no browser build. Each entry point adds only the gateways it
+serves from the generic archetype where Android uses a dedicated native module: iOS `paystack` and
+`mpesa`, web `paystack`.
 
 <div align="center">
 <img src="docs/screenshots/ios_catalog_all_native.png" alt="Stripe, Razorpay, Cashfree, Omise and Square all showing in the iOS catalog, real SDKs linked" width="320" />
