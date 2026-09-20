@@ -407,7 +407,7 @@
 			repositoryURL = "https://github.com/razorpay/razorpay-pod";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.5.4;
+				minimumVersion = 1.5.8;
 			};
 		};
 		1A000000000000000000002D /* XCRemoteSwiftPackageReference "core-ios-sdk" */ = {

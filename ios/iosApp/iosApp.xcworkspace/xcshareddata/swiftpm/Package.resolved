@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/razorpay/razorpay-pod",
       "state" : {
-        "revision" : "55825c43d5b7fad08e17201f6dfe6095703fcb30",
-        "version" : "1.5.4"
+        "revision" : "a7ee6d9db75d629376a2ea0d5c19cfedf8bed95d",
+        "version" : "1.5.8"
       }
     },
     {

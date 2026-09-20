@@ -334,7 +334,7 @@ equivalent at all, Apple Pay is a separate Apple product, not a Google Pay port.
 | Gateway | iOS SDK | Docs |
 |---|---|---|
 | Stripe | `StripePaymentSheet` (SPM, `26.11.0`) | [stripe-ios.md](docs/providers/stripe-ios.md) |
-| Razorpay | `RazorpayCheckout` (SPM, `razorpay-pod` `1.5.4`) | [razorpay-ios.md](docs/providers/razorpay-ios.md) |
+| Razorpay | `RazorpayCheckout` (SPM, `razorpay-pod` `1.5.8`) | [razorpay-ios.md](docs/providers/razorpay-ios.md) |
 | Cashfree | `CashfreePGUISDK` Drop Checkout (SPM, `core-ios-sdk`) | [cashfree-ios.md](docs/providers/cashfree-ios.md) |
 | Omise | `OmiseSDK` manual tokenization (SPM, `5.6.3`) | [omise-ios.md](docs/providers/omise-ios.md) |
 | Square | `SQIPCardEntryViewController` (CocoaPods, `1.6.7`, no SPM distribution exists) | [square-ios.md](docs/providers/square-ios.md) |

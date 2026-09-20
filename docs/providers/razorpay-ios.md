@@ -1,7 +1,7 @@
 # Razorpay on iOS
 
 - **Region:** India
-- **Archetype:** A (native SDK — `RazorpayCheckout`, real `razorpay-pod` `1.5.4` via SPM)
+- **Archetype:** A (native SDK — `RazorpayCheckout`, real `razorpay-pod` `1.5.8` via SPM)
 - **Status shipped:** `SANDBOX_READY`
 - **Docs:** https://razorpay.com/docs/payments/payment-gateway/ios-integration/standard/
 
