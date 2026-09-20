@@ -11,9 +11,9 @@ materialIconsExtended = "1.7.3"
 compose-bom = "2026.08.00"
 
 kotlinx-coroutines = "1.11.0"
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0-RC"
 kotlinx-datetime = "0.8.0"
-kotlinx-collections-immutable = "0.5.1"
+kotlinx-collections-immutable = "0.5.2"
 
 koin = "4.2.2"
 room = "2.8.4"
