@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cashfree/core-ios-sdk",
       "state" : {
-        "branch" : "master",
-        "revision" : "eb5fbab7125016b58e576b98d39119e8142e5f10"
+        "revision" : "bcf6be4a0d8a4da55600ab6a9ad1368039b31917",
+        "version" : "2.5.5"
       }
     },
     {

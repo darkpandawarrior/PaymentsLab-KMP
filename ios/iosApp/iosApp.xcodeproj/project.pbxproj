@@ -414,8 +414,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/cashfree/core-ios-sdk";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.5;
 			};
 		};
 		1A0000000000000000000036 /* XCRemoteSwiftPackageReference "omise-ios" */ = {
