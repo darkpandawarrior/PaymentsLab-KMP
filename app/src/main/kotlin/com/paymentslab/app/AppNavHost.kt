@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -96,77 +98,7 @@ fun AppNavHost(paymentHost: PaymentHost) {
                         fadeOut(tween(DesignTokens.Motion.MEDIUM_MS))
                 },
             ) {
-                composable("home") {
-                    HomeRoot(
-                        onOpenExplore = {
-                            navController.navigate("explore") {
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            }
-                        },
-                        onOpenActivity = {
-                            navController.navigate("activity") {
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            }
-                        },
-                    )
-                }
-                composable("explore") {
-                    LabHomeRoot(
-                        onOpenProvider = { gatewayId -> navController.navigate("provider/${gatewayId.value}") },
-                        onOpenSettings = { navController.navigate("lab-settings") },
-                        onOpenFlowDiff = { navController.navigate("flow-diff") },
-                    )
-                }
-                composable("lab-settings") {
-                    LabSettingsRoot(onBack = { navController.popBackStack() })
-                }
-                composable("flow-diff") {
-                    FlowDiffRoot(onBack = { navController.popBackStack() })
-                }
-                composable(
-                    "provider/{id}",
-                    enterTransition = {
-                        scaleIn(tween(DesignTokens.Motion.MEDIUM_MS), initialScale = 0.9f) +
-                            fadeIn(tween(DesignTokens.Motion.MEDIUM_MS))
-                    },
-                    exitTransition = {
-                        scaleOut(tween(DesignTokens.Motion.MEDIUM_MS), targetScale = 0.9f) +
-                            fadeOut(tween(DesignTokens.Motion.MEDIUM_MS))
-                    },
-                ) { entry ->
-                    val id = entry.arguments?.getString("id").orEmpty()
-                    val meta = registry.byId(GatewayId(id))?.meta
-                    // SecureScreen: block screenshots / screen-recording / recents-thumbnail on the
-                    // payment-bearing screens, the way banking apps do.
-                    SecureScreen {
-                        ProviderLabRoot(
-                            paymentHost = paymentHost,
-                            gatewayId = GatewayId(id),
-                            providerName = meta?.displayName ?: id,
-                            priceLabel = "₹499",
-                            catalogItemId = "book_499",
-                            onBack = { navController.popBackStack() },
-                        )
-                    }
-                }
-                composable(
-                    "checkout",
-                    enterTransition = {
-                        scaleIn(tween(DesignTokens.Motion.MEDIUM_MS), initialScale = 0.85f) +
-                            fadeIn(tween(DesignTokens.Motion.MEDIUM_MS))
-                    },
-                    exitTransition = {
-                        scaleOut(tween(DesignTokens.Motion.MEDIUM_MS), targetScale = 0.85f) +
-                            fadeOut(tween(DesignTokens.Motion.MEDIUM_MS))
-                    },
-                ) {
-                    SecureScreen {
-                        CheckoutRoot(paymentHost = paymentHost, onBack = { navController.popBackStack() })
-                    }
-                }
-                composable("activity") {
-                    HistoryRoot()
-                }
+                paymentsLabGraph(navController, registry, paymentHost)
             }
         }
 
@@ -181,5 +113,87 @@ fun AppNavHost(paymentHost: PaymentHost) {
         // Same overlay idiom for Stripe Connect's mock hosted-OAuth onboarding (roadmap #11) — shares
         // the one relay instance, keyed by its own gateway id so it never collides with a checkout.
         StripeConnectCheckoutHost(relay = hostedCheckoutRelay, modifier = Modifier.fillMaxSize())
+    }
+}
+
+/**
+ * The route table, split out of [AppNavHost] so the shell (bottom bar, FAB, transitions, overlays)
+ * and the list of destinations can be read one at a time instead of as one 120-line composable.
+ */
+private fun NavGraphBuilder.paymentsLabGraph(
+    navController: NavHostController,
+    registry: PaymentGatewayRegistry,
+    paymentHost: PaymentHost,
+) {
+    composable("home") {
+        HomeRoot(
+            onOpenExplore = {
+                navController.navigate("explore") {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                }
+            },
+            onOpenActivity = {
+                navController.navigate("activity") {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                }
+            },
+        )
+    }
+    composable("explore") {
+        LabHomeRoot(
+            onOpenProvider = { gatewayId -> navController.navigate("provider/${gatewayId.value}") },
+            onOpenSettings = { navController.navigate("lab-settings") },
+            onOpenFlowDiff = { navController.navigate("flow-diff") },
+        )
+    }
+    composable("lab-settings") {
+        LabSettingsRoot(onBack = { navController.popBackStack() })
+    }
+    composable("flow-diff") {
+        FlowDiffRoot(onBack = { navController.popBackStack() })
+    }
+    composable(
+        "provider/{id}",
+        enterTransition = {
+            scaleIn(tween(DesignTokens.Motion.MEDIUM_MS), initialScale = 0.9f) +
+                fadeIn(tween(DesignTokens.Motion.MEDIUM_MS))
+        },
+        exitTransition = {
+            scaleOut(tween(DesignTokens.Motion.MEDIUM_MS), targetScale = 0.9f) +
+                fadeOut(tween(DesignTokens.Motion.MEDIUM_MS))
+        },
+    ) { entry ->
+        val id = entry.arguments?.getString("id").orEmpty()
+        val meta = registry.byId(GatewayId(id))?.meta
+        // SecureScreen: block screenshots / screen-recording / recents-thumbnail on the
+        // payment-bearing screens, the way banking apps do.
+        SecureScreen {
+            ProviderLabRoot(
+                paymentHost = paymentHost,
+                gatewayId = GatewayId(id),
+                providerName = meta?.displayName ?: id,
+                priceLabel = "₹499",
+                catalogItemId = "book_499",
+                onBack = { navController.popBackStack() },
+            )
+        }
+    }
+    composable(
+        "checkout",
+        enterTransition = {
+            scaleIn(tween(DesignTokens.Motion.MEDIUM_MS), initialScale = 0.85f) +
+                fadeIn(tween(DesignTokens.Motion.MEDIUM_MS))
+        },
+        exitTransition = {
+            scaleOut(tween(DesignTokens.Motion.MEDIUM_MS), targetScale = 0.85f) +
+                fadeOut(tween(DesignTokens.Motion.MEDIUM_MS))
+        },
+    ) {
+        SecureScreen {
+            CheckoutRoot(paymentHost = paymentHost, onBack = { navController.popBackStack() })
+        }
+    }
+    composable("activity") {
+        HistoryRoot()
     }
 }

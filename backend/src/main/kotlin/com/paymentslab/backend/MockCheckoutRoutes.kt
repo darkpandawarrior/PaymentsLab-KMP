@@ -34,12 +34,9 @@ import kotlinx.coroutines.launch
  */
 fun Route.mockCheckoutRoutes(actor: PaymentActor) {
     get("/mock/checkout/{provider}") {
-        val provider =
-            call.parameters["provider"]
-                ?: throw BadRequestException("missing_provider", "provider path param required")
+        val provider = call.parameters["provider"].orBadRequest("missing_provider", "provider path param required")
         val orderId =
-            call.request.queryParameters["orderId"]
-                ?: throw BadRequestException("missing_order_id", "orderId query param required")
+            call.request.queryParameters["orderId"].orBadRequest("missing_order_id", "orderId query param required")
         call.respondText(mockCheckoutHtml(provider, orderId), ContentType.Text.Html)
     }
 
@@ -54,14 +51,11 @@ fun Route.mockCheckoutRoutes(actor: PaymentActor) {
     }
 
     post("/mock/momo/{provider}") {
-        val provider =
-            call.parameters["provider"]
-                ?: throw BadRequestException("missing_provider", "provider path param required")
+        val provider = call.parameters["provider"].orBadRequest("missing_provider", "provider path param required")
         val orderId =
-            call.request.queryParameters["orderId"]
-                ?: throw BadRequestException("missing_order_id", "orderId query param required")
+            call.request.queryParameters["orderId"].orBadRequest("missing_order_id", "orderId query param required")
         val outcome = call.request.queryParameters["outcome"] ?: "success"
-        val delayMs = call.request.queryParameters["delayMs"]?.toLongOrNull() ?: DEFAULT_MOMO_DELAY_MS
+        val delayMs = call.request.queryParameters["delayMs"]?.toLongOrNull() ?: DefaultMomoDelayMs
 
         call.application.launch {
             delay(delayMs)
@@ -89,9 +83,7 @@ fun Route.mockCheckoutRoutes(actor: PaymentActor) {
     }
 
     post("/mock/cash/{orderId}/settle") {
-        val orderId =
-            call.parameters["orderId"]
-                ?: throw BadRequestException("missing_order_id", "orderId path param required")
+        val orderId = call.parameters["orderId"].orBadRequest("missing_order_id", "orderId path param required")
 
         // Same eventId every time this order is settled → applyWebhook's dedup makes a repeat
         // settle call (double-click, retried request) a no-op rather than a second state transition.
@@ -133,9 +125,7 @@ private suspend fun RoutingContext.mockWebhookSettle(
     provider: String,
     eventPrefix: String,
 ) {
-    val orderId =
-        call.parameters["orderId"]
-            ?: throw BadRequestException("missing_order_id", "orderId path param required")
+    val orderId = call.parameters["orderId"].orBadRequest("missing_order_id", "orderId path param required")
 
     val result =
         actor.applyWebhook(
@@ -157,7 +147,17 @@ private suspend fun RoutingContext.mockWebhookSettle(
     )
 }
 
-private const val DEFAULT_MOMO_DELAY_MS = 3_000L
+/**
+ * The one place these routes reject a request. Five call sites repeated the same
+ * `?: throw BadRequestException(...)` pair verbatim; folding them here means a change to how a
+ * missing parameter is reported happens once, not five times.
+ */
+private fun String?.orBadRequest(
+    code: String,
+    message: String,
+): String = this ?: throw BadRequestException(code, message)
+
+private const val DefaultMomoDelayMs = 3_000L
 
 private fun mockCheckoutHtml(
     provider: String,
