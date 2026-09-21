@@ -120,11 +120,17 @@ tasks.register("fastGate") {
 // purpose: a second hardcoded absolute path is precisely the upstream bug.
 // DELETE once that artifact stops shipping an absolute Xcode path — do not "tidy" it away before.
 val swiftRuntimeLibDir: String? =
-    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX) {
+    if (org.gradle.internal.os.OperatingSystem
+            .current()
+            .isMacOsX
+    ) {
         runCatching {
             // …/usr/bin/swift -> …/usr/lib/swift
-            providers.exec { commandLine("xcrun", "--find", "swift") }
-                .standardOutput.asText.get().trim()
+            providers
+                .exec { commandLine("xcrun", "--find", "swift") }
+                .standardOutput.asText
+                .get()
+                .trim()
                 .substringBeforeLast("/bin/swift") + "/lib/swift"
         }.getOrNull()
     } else {
@@ -136,11 +142,12 @@ if (swiftRuntimeLibDir != null) {
         plugins.withId("org.jetbrains.kotlin.multiplatform") {
             extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension> {
                 targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
-                    val sdk = when {
-                        name.startsWith("iosSimulator") -> "iphonesimulator"
-                        name.startsWith("ios") -> "iphoneos"
-                        else -> return@configureEach
-                    }
+                    val sdk =
+                        when {
+                            name.startsWith("iosSimulator") -> "iphonesimulator"
+                            name.startsWith("ios") -> "iphoneos"
+                            else -> return@configureEach
+                        }
                     binaries.withType<org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable>().configureEach {
                         linkerOpts("-L$swiftRuntimeLibDir/$sdk")
                     }
