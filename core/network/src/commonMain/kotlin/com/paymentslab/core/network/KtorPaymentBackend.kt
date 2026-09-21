@@ -72,7 +72,12 @@ class KtorPaymentBackend(
      * Runs [block], logging entry/exit and converting any non-cancellation failure into a
      * [PaymentNetworkException] carrying [label] for context. [CancellationException] is rethrown
      * untouched so structured concurrency / cooperative cancellation still works.
+     *
+     * A transport boundary, so the catch has to be total: Ktor's throw surface is engine-specific
+     * (OkHttp on Android, Darwin on iOS, fetch on wasmJs all raise different types) and there is no
+     * portable narrower set to name — hence the suppression rather than a list of exception types.
      */
+    @Suppress("TooGenericExceptionCaught")
     private inline fun <T> request(
         label: String,
         block: () -> T,
