@@ -50,6 +50,14 @@ complexity:
       - '**/jvmTest/**'
       - '**/androidUnitTest/**'
       - '**/androidInstrumentedTest/**'
+      # AGP renamed the KMP test source sets: androidUnitTest -> androidHostTest and
+      # androidInstrumentedTest -> androidDeviceTest. detekt 2.0.0-alpha.6's defaults still carry
+      # only the OLD names, and this family builds on AGP 9.5.0-alpha06, so WITHOUT these two lines
+      # every backtick-free test function name in androidHostTest is a live FunctionNaming
+      # violation and every test literal is a live MagicNumber. Verified against
+      # default-detekt-config.yml inside detekt-core-2.0.0-alpha.6.jar.
+      - '**/androidHostTest/**'
+      - '**/androidDeviceTest/**'
       - '**/jsTest/**'
       - '**/iosTest/**'
       # --- KMP source sets this family targets that detekt 2.0 ships no default for. ---
