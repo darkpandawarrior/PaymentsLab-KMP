@@ -35,7 +35,9 @@ dependencies {
         ":core:network",
         ":core:data",
         ":backend",
-    ).forEach { path -> findProject(path)?.let { kover(it) } }
+        // `kover(project(path))`, not `kover(it)`: passing a Project object as a dependency
+        // notation is deprecated and fails with an error in Gradle 10.
+    ).forEach { path -> findProject(path)?.let { kover(project(path)) } }
 }
 
 kover {
