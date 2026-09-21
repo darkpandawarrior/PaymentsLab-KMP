@@ -50,7 +50,7 @@ class HomeViewModel(
                         recentActivity =
                             payments
                                 .sortedByDescending { it.createdAtEpochMs }
-                                .take(3)
+                                .take(RecentActivityRows)
                                 .map { RecentActivityRow(it.orderId, it.catalogItemId, it.status) }
                                 .toImmutableList(),
                     )
@@ -67,3 +67,6 @@ private fun List<PendingPayment>.successRatePercent(): Int {
     val successes = resolved.count { it.status == PaymentStatus.SUCCESS || it.status == PaymentStatus.REFUNDED }
     return ((successes.toDouble() / resolved.size) * 100).let { kotlin.math.round(it).toInt() }
 }
+
+/** How many of the most recent payments the home screen's activity strip shows. */
+private const val RecentActivityRows = 3

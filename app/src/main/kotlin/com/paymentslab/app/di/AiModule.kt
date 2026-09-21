@@ -44,7 +44,7 @@ val aiModule =
                 ModelManifestEntry(
                     id = "gemma3-1b-it",
                     displayName = "Gemma 3 1B (on-device)",
-                    approxSizeMb = GEMMA_3_1B_APPROX_SIZE_MB,
+                    approxSizeMb = Gemma31bApproxSizeMb,
                     fileName = "gemma3-1b-it.task",
                     hfRepo = "litert-community/Gemma3-1B-IT",
                     hfFile = "gemma3-1b-it.task",
@@ -54,7 +54,7 @@ val aiModule =
         }
     }
 
-private const val GEMMA_3_1B_APPROX_SIZE_MB = 554
+private const val Gemma31bApproxSizeMb = 554
 
 /**
  * [buildProviderChain]'s required last resort when neither on-device nor any cloud key is

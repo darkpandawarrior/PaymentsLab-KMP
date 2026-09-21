@@ -75,7 +75,7 @@ fun startMockCheckoutAutoResolver(
     scope.launch {
         relay.requests.collect { request ->
             if (request != null) {
-                delay(MOCK_CHECKOUT_MS)
+                delay(MockCheckoutMs)
                 relay.reportResult(
                     request.gatewayId,
                     HostedReturnOutcome.Success(paymentId = "mock_pay_${request.gatewayId.value}"),
@@ -85,4 +85,4 @@ fun startMockCheckoutAutoResolver(
     }
 }
 
-private const val MOCK_CHECKOUT_MS = 1_400L
+private const val MockCheckoutMs = 1_400L
