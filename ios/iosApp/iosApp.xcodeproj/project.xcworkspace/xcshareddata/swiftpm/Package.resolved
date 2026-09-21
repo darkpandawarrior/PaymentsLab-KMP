@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cashfree/core-ios-sdk",
       "state" : {
-        "branch" : "master",
-        "revision" : "eb5fbab7125016b58e576b98d39119e8142e5f10"
+        "revision" : "bcf6be4a0d8a4da55600ab6a9ad1368039b31917",
+        "version" : "2.5.5"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/razorpay/razorpay-pod",
       "state" : {
-        "revision" : "55825c43d5b7fad08e17201f6dfe6095703fcb30",
-        "version" : "1.5.4"
+        "revision" : "a7ee6d9db75d629376a2ea0d5c19cfedf8bed95d",
+        "version" : "1.5.8"
       }
     },
     {
@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/stripe/stripe-ios",
       "state" : {
-        "revision" : "3aae3e09812d4a84177850cc235f4179aa727d2b",
-        "version" : "26.1.0"
+        "revision" : "70378192e4b345bd4283511e1f6a3151591ebecf",
+        "version" : "26.11.0"
       }
     }
   ],

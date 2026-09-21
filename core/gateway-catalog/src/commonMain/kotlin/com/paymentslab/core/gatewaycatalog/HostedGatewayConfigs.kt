@@ -1,4 +1,4 @@
-package com.paymentslab.app
+package com.paymentslab.core.gatewaycatalog
 
 import com.siddharth.kmp.paymentsapi.Capability
 import com.siddharth.kmp.paymentsapi.GatewayId

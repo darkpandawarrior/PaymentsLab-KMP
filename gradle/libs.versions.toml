@@ -1,57 +1,57 @@
 [versions]
-agp = "9.5.0-alpha02"
-kotlin = "2.4.20-RC"
-ksp = "2.3.11"
-compose-multiplatform = "1.12.0-rc01"
-foundation = "1.12.0-beta01"
-runtime = "1.12.0-beta01"
-ui = "1.12.0-beta01"
-material3 = "1.12.0-alpha03"
+agp = "9.5.0-alpha06"
+kotlin = "2.4.20"
+ksp = "2.3.12"
+# Every org.jetbrains.compose.* artifact MUST carry this exact string (version.ref =
+# "compose-multiplatform"), not a hand-typed copy. A lower pin loses to the plugin on Gradle's
+# highest-wins and silently goes inert; that drift is what broke :app:dependencyGuard elsewhere
+# in this family. EXCEPTION: material-icons-extended is not on this train (frozen at 1.7.3).
+compose-multiplatform = "1.13.0-alpha01"
 materialIconsExtended = "1.7.3"
-compose-bom = "2026.08.00"
+compose-bom = "2026.09.00"
 
 kotlinx-coroutines = "1.11.0"
-kotlinx-serialization = "1.11.0"
+kotlinx-serialization = "1.12.0-RC"
 kotlinx-datetime = "0.8.0"
-kotlinx-collections-immutable = "0.5.1"
+kotlinx-collections-immutable = "0.5.2"
 
 koin = "4.2.2"
-room = "2.8.4"
-sqlite-bundled = "2.7.0"
-datastore = "1.3.0-alpha10"
+room = "2.8.5"
+sqlite-bundled = "2.8.0-alpha01"
+datastore = "1.3.0-alpha11"
 multiplatform-settings = "1.3.0"
 napier = "2.7.1"
 security-crypto = "1.1.0"
 
 core-ktx = "1.19.0"
-activity-compose = "1.13.0"
-lifecycle = "2.11.0"
-workmanager = "2.11.2"
-kmpworkmanager = "3.3.1"
-jbNavigationCompose = "2.10.0-alpha02"
-coil3 = "3.5.0"
+activity-compose = "1.14.0-alpha02"
+lifecycle = "2.12.0-alpha03"
+workmanager = "2.12.0-rc01"
+kmpworkmanager = "3.5.0"
+jbNavigationCompose = "2.10.0-beta01"
+coil3 = "3.6.3"
 compose-webview-multiplatform = "2.0.3"
 
 # Networking (KMP client + JVM server)
-ktor = "3.5.1"
-logback = "1.5.38"
+ktor = "3.6.0"
+logback = "1.6.3"
 
 # Payment provider SDKs (Android-only, live in provider:* androidMain)
 razorpay = "1.6.41"
-cashfree = "2.5.0"
-stripe = "23.11.1"
+cashfree = "2.6.0"
+stripe = "23.19.0"
 play-services-wallet = "20.0.0"
 
 # Testing
 junit = "4.13.2"
 mockk = "1.14.11"
 turbine = "1.2.1"
-robolectric = "4.16.1"
-roborazzi = "1.67.0"
+robolectric = "4.17"
+roborazzi = "1.74.0"
 
 # Code quality + build health
 detekt = "2.0.0-alpha.6"
-kover = "0.9.8"
+kover = "0.9.9"
 ktlint-plugin = "14.2.0"
 dependency-guard = "0.5.0"
 
@@ -65,13 +65,13 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 
 # Compose Multiplatform
-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "foundation" }
-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "runtime" }
-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "ui" }
-ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "ui" }
-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
+foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose-multiplatform" }
+runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
+ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
+ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "foundation" }
+components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }
 
 # Compose (Android view of BOM, for provider/app android-only surfaces + tooling)
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }

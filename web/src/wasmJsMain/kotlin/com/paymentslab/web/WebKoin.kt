@@ -1,5 +1,8 @@
 package com.paymentslab.web
 
+import com.paymentslab.core.gatewaycatalog.allHostedGatewayConfigs
+import com.paymentslab.core.gatewaycatalog.allStubGatewayConfigs
+import com.paymentslab.core.gatewaycatalog.stubGatewayModule
 import com.paymentslab.core.orchestration.OrchestratorFlowRunner
 import com.paymentslab.core.orchestration.PaymentFlowRunner
 import com.paymentslab.core.orchestration.di.orchestrationModule
@@ -22,8 +25,12 @@ import org.koin.dsl.module
 
 /**
  * The web preview's composition root — the browser counterpart to `ios/shared/KoinInit.kt`. Only
- * the wasm-capable slice is wired: hosted-webview archetype gateways over in-memory backend/journal
- * fakes. The feature modules' own Koin modules (`labModule`/`checkoutDemoModule`) are redeclared
+ * the wasm-capable slice is wired: the shared `:core:gateway-catalog` hosted-webview + stub lists
+ * (the same 44 + 3 rows Android and iOS read) over in-memory backend/journal fakes. The
+ * mobile-money and wallet archetypes are absent because their provider modules publish no wasmJs
+ * target, not because the browser could not show them.
+ *
+ * The feature modules' own Koin modules (`labModule`/`checkoutDemoModule`) are redeclared
  * here rather than imported: the checkout ViewModel needs the widened MOCK_MODE gateway filter,
  * and the lab module would otherwise double-register the same [PaymentFlowRunner] binding.
  */
@@ -35,7 +42,10 @@ fun initWebKoin(): Koin =
                 single<PendingPaymentJournal> { InMemoryPendingPaymentJournal() }
             },
             orchestrationModule,
-            hostedWebViewModule(webHostedGatewayConfigs),
+            hostedWebViewModule(allHostedGatewayConfigs + webOnlyHostedGatewayConfigs),
+            // Catalog-only rows. `StubGateway` lives in payments-api, which publishes wasmJs, so
+            // the browser can show the same docs-only entries the Android catalog does.
+            stubGatewayModule(allStubGatewayConfigs),
             module {
                 single<PaymentFlowRunner> { OrchestratorFlowRunner(get()) }
                 viewModel { LabHomeViewModel(get()) }

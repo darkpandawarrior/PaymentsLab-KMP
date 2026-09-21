@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # versionCode derives from `git rev-list --count HEAD`. A shallow clone
           # reports 1, which silently produced versionCode 2 on every published APK.
@@ -30,20 +30,20 @@ jobs:
           submodules: recursive
 
       - name: Set up JDK 25
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '25'
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
       # Kotlin/Native toolchain (~1 GB) lives outside ~/.gradle; cache it separately, keyed on the
       # version catalog so it invalidates when the Kotlin/KMP version changes.
       - name: Cache Kotlin/Native toolchain
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.konan
           key: ${{ runner.os }}-konan-v1-${{ hashFiles('gradle/libs.versions.toml') }}
@@ -52,7 +52,7 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4.0.4
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload debug APK
         if: success()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         # An artifact is a convenience; the account's 500 MB artifact quota must not fail the gate.
         continue-on-error: true
         with:

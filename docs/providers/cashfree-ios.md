@@ -1,7 +1,7 @@
 # Cashfree on iOS
 
 - **Region:** India
-- **Archetype:** A (native SDK — `CashfreePGUISDK` Drop Checkout, real `core-ios-sdk` via SPM)
+- **Archetype:** A (native SDK — `CashfreePGUISDK` Drop Checkout, real `core-ios-sdk` `2.5.5` via SPM)
 - **Status shipped:** `SANDBOX_READY`
 - **Docs:** https://docs.cashfree.com/docs/ios-integration
 
@@ -38,3 +38,11 @@ are per-component, e.g. `ui-2.4.1`/`api-2.3.1`, not a single unified release), i
 alongside Stripe/Razorpay/Omise — Cashfree shows `Sandbox ready` with no crash. Not verified:
 tapping through to actually open Drop Checkout — no touch-injection tool available for iOS
 Simulator in this environment.
+
+## SPM pin
+
+`core-ios-sdk` is pinned to the tag `2.5.5` (`upToNextMajorVersion`), not to the `master` branch it
+carried until 2026-09-20. A branch requirement makes the build non-reproducible: SPM re-resolves
+`master` to whatever HEAD happens to be, so the same commit of this repo could link a different SDK
+on two machines. `2.5.5` is the newest *plain-semver* tag the repo publishes — the `ui-*`,
+`api-*` and `analytics-*` tag series are per-product and are not resolvable by SPM's version rules.

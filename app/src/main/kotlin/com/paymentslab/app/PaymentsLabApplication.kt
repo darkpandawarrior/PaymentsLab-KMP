@@ -6,6 +6,11 @@ import com.paymentslab.app.di.aiModule
 import com.paymentslab.app.work.PaymentReconciliationWorker
 import com.paymentslab.app.work.PaymentWorkerFactory
 import com.paymentslab.core.data.di.dataModule
+import com.paymentslab.core.gatewaycatalog.allHostedGatewayConfigs
+import com.paymentslab.core.gatewaycatalog.allMobileMoneyConfigs
+import com.paymentslab.core.gatewaycatalog.allStubGatewayConfigs
+import com.paymentslab.core.gatewaycatalog.stubGatewayModule
+import com.paymentslab.core.gatewaycatalog.walletConfig
 import com.paymentslab.core.network.di.networkModule
 import com.paymentslab.core.orchestration.di.orchestrationModule
 import com.paymentslab.feature.checkoutdemo.di.checkoutDemoModule

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Required by App Store submission. Every entry below was established by scanning what this
+	  binary actually links, not by pattern-matching what a payments app "usually" does — an
+	  over-declaration is a false statement to Apple just as an omission is a rejection.
+	  Evidence for each decision is in docs/ios-privacy-manifest.md.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<!--
+	  Empty by design. This app has no accounts, no analytics SDK, no crash reporter and no IDFA
+	  (`ASIdentifierManager`, `AppTrackingTransparency`, `advertisingIdentifier` all return zero
+	  hits across iosMain and the Swift target). Card details are typed into each vendor SDK's own
+	  UI (StripePaymentSheet, Razorpay Checkout, Cashfree Drop, Omise, Square card entry) and
+	  transmitted by that SDK, which carries its own PrivacyInfo.xcprivacy inside its framework —
+	  a third-party SDK's collection is declared by the SDK, not by the host app. What this app
+	  itself sends to its own backend is catalog item ids, minor-unit amounts, order ids and
+	  idempotency keys, none of which identify a person.
+	-->
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<!--
+			  androidx.sqlite:sqlite-bundled statically links its own SQLite amalgamation into the
+			  Kotlin/Native binary (core/data uses BundledSQLiteDriver on iOS). Undefined symbols in
+			  libandroidXBundledSqlite.a include _stat, _fstat and _lstat; Kotlin/Native's own
+			  source_info_libbacktrace.bc references _stat as well. Every one of those calls targets
+			  a file this app created inside its own container (the Room db under Documents/).
+			-->
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+		<dict>
+			<!--
+			  Same static library: _statfs and _fstatfs. SQLite queries free space on the volume
+			  holding its own database file before growing it. Container-scoped, never displayed to
+			  the user and never sent off device.
+			-->
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryDiskSpace</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>E174.1</string>
+			</array>
+		</dict>
+	</array>
+	<!--
+	  Deliberately ABSENT, each because the grep came back empty:
+	    NSPrivacyAccessedAPICategoryUserDefaults (CA92.1)   — no NSUserDefaults. :settings uses
+	      KeychainSettings on iOS (Keychain is not a required-reason API), and multiplatform-settings
+	      is not on this app's link path at all.
+	    NSPrivacyAccessedAPICategorySystemBootTime (35F9.1) — no systemUptime, no mach_absolute_time,
+	      no clock_gettime. The Kotlin/Native runtime uses gettimeofday, which is wall-clock and is
+	      not on Apple's required-reason list.
+	-->
+</dict>
+</plist>

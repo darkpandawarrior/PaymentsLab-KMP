@@ -32,7 +32,7 @@ import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentHost
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatformTools
 
 /**
  * Stateful entry point for a provider's live lab. [paymentHost] is the platform payment host the
@@ -55,7 +55,7 @@ fun ProviderLabRoot(
     // the global Koin context rather than koinViewModel/koinInject so a missing binding degrades to
     // null (deterministic-only explanations) instead of crashing. See labAiModule's own KDoc for why
     // this binding is Android-only today.
-    val explainer = remember { GlobalContext.getOrNull()?.getOrNull<ErrorExplainer>() }
+    val explainer = remember { KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<ErrorExplainer>() }
     ProviderLabScreen(
         state = state,
         providerName = providerName,

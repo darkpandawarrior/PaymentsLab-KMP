@@ -20,7 +20,7 @@ import com.paymentslab.core.designsystem.SectionHeader
 import com.siddharth.kmp.paymentsapi.GatewayId
 import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatformTools
 
 /**
  * Stateful entry point: resolves [FlowDiffViewModel] and — same degrade-gracefully pattern as
@@ -35,7 +35,7 @@ fun FlowDiffRoot(
     viewModel: FlowDiffViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val explainer = remember { GlobalContext.getOrNull()?.getOrNull<FlowDiffExplainer>() }
+    val explainer = remember { KoinPlatformTools.defaultContext().getOrNull()?.getOrNull<FlowDiffExplainer>() }
     FlowDiffScreen(
         state = state,
         explainer = explainer,

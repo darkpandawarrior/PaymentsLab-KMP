@@ -25,9 +25,10 @@ import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentHost
 
 /**
- * A dummy [PaymentHost] — every gateway wired into [iosHostedGatewayConfigs]/
- * [iosMobileMoneyConfigs] only needs the opaque marker, never an Activity/ViewController-typed
- * cast (unlike Android's native-SDK archetype-A providers, which are correctly absent here).
+ * A dummy [PaymentHost] — every gateway in the shared `:core:gateway-catalog` lists, plus the two
+ * generic-archetype fallbacks in `IosGatewayConfigs.kt`, only needs the opaque marker, never an
+ * Activity/ViewController-typed cast. The native-SDK archetype-A gateways that DO need a real host
+ * go through their Swift `*CheckoutHost` instead (see `KoinInit.kt`).
  */
 private object IosPaymentHost : PaymentHost
 

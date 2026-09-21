@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import com.paymentslab.core.designsystem.AppShell
 import com.paymentslab.core.designsystem.AppShellDestination
 import com.paymentslab.core.designsystem.PaymentsLabTheme
+import com.paymentslab.core.gatewaycatalog.allHostedGatewayConfigs
 import com.paymentslab.feature.checkoutdemo.CheckoutRoot
 import com.paymentslab.feature.lab.LabHomeRoot
 import com.paymentslab.feature.lab.ProviderLabRoot
@@ -70,7 +71,7 @@ fun WebAppRoot() {
                             paymentHost = WebPaymentHost,
                             gatewayId = current.gatewayId,
                             providerName =
-                                webHostedGatewayConfigs
+                                (allHostedGatewayConfigs + webOnlyHostedGatewayConfigs)
                                     .firstOrNull { it.gatewayId == current.gatewayId }
                                     ?.displayName ?: current.gatewayId.value,
                             priceLabel = "₹149",

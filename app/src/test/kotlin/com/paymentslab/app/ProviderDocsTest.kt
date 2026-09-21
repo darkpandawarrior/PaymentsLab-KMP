@@ -1,5 +1,9 @@
 package com.paymentslab.app
 
+import com.paymentslab.core.gatewaycatalog.allHostedGatewayConfigs
+import com.paymentslab.core.gatewaycatalog.allMobileMoneyConfigs
+import com.paymentslab.core.gatewaycatalog.allStubGatewayConfigs
+import com.paymentslab.core.gatewaycatalog.walletConfig
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File

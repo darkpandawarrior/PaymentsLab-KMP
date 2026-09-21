@@ -120,6 +120,11 @@ include(":core:orchestration")
 include(":core:network")
 include(":core:data")
 include(":core:designsystem")
+// Plain gateway data lists, lifted out of app/src/main so iOS and :web read the same catalog as
+// Android. Split by target capability, not by concern: hosted-webview publishes wasmJs, the
+// mobile-money and wallet providers do not.
+include(":core:gateway-catalog")
+include(":core:gateway-catalog-nonweb")
 // :core:security extracted to kmp-toolkit's :security module (external/kmp-toolkit) — consumed as
 // com.siddharth.kmp:security via the includeBuild substitution above.
 

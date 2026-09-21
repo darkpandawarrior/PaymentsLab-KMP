@@ -1,7 +1,7 @@
 # Stripe on iOS
 
 - **Region:** Global
-- **Archetype:** A (native SDK — `StripePaymentSheet`, real `stripe-ios` 26.1.0 via SPM)
+- **Archetype:** A (native SDK — `StripePaymentSheet`, real `stripe-ios` 26.11.0 via SPM)
 - **Status shipped:** `SANDBOX_READY`
 - **Docs:** https://docs.stripe.com/payments/quickstart?platform=ios
 
@@ -68,7 +68,7 @@ returns the same `client_secret`/`publishable_key` pair regardless of which clie
 
 ## SPM dependency
 
-`https://github.com/stripe/stripe-ios`, product `StripePaymentSheet`, pinned to `26.1.0` (verified
+`https://github.com/stripe/stripe-ios`, product `StripePaymentSheet`, pinned to `26.11.0` (verified
 via the GitHub releases API — the repo hosts `Package.swift` directly at its root, no separate SPM
 mirror repo needed). Min iOS 15, matching this project's deployment target.
 

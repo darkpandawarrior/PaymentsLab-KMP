@@ -17,7 +17,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 
 /**
  * Razorpay on iOS — the native-SDK counterpart to Android's `provider:razorpay` `RazorpayGateway`,
- * built on the real `RazorpayCheckout` iOS SDK (SPM, `razorpay-pod` `1.5.4`) rather than a WebView
+ * built on the real `RazorpayCheckout` iOS SDK (SPM, `razorpay-pod` `1.5.8`) rather than a WebView
  * fallback. Same boundary shape as [StripeIosGateway]: Kotlin/Native can't cinterop against
  * Razorpay's Swift-facing API surface directly (the SDK's public headers are Swift-generated), so
  * Swift implements the Kotlin [RazorpayCheckoutHost] interface instead.

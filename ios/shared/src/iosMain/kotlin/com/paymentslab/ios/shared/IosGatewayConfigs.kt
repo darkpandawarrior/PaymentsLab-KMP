@@ -8,12 +8,20 @@ import com.siddharth.kmp.provider.hostedwebview.ReturnUrlMatchers
 import com.siddharth.kmp.provider.mobilemoney.MobileMoneyConfig
 
 /**
- * The iOS app's gateway list — a deliberately small slice of the Android app's ~65-row catalog,
- * proving archetype C (hosted-webview) and D (mobile-money) genuinely run cross-platform rather
- * than wiring every gateway again. Same MOCK_MODE-by-default honesty as the Android configs (see
- * `app/HostedGatewayConfigs.kt`) — these are intentionally identical in shape, just fewer of them.
+ * The two gateways iOS serves from the GENERIC archetypes that Android serves from a dedicated
+ * native provider module instead — so they are absent from `:core:gateway-catalog`'s shared lists
+ * and would otherwise be silently dropped from iOS.
+ *
+ * Everything else (44 hosted, 7 mobile-money, 3 stub, 1 wallet) now comes from the shared catalog,
+ * which is the whole point: `IosGatewayConfigs.kt` used to hand-maintain a 5-row slice of Android's
+ * catalog. See `core/gateway-catalog/`.
+ *
+ *  - `paystack` — Android runs `provider:paystack` (real Standard Checkout REST); there is no iOS
+ *    binding for that module, so iOS falls back to the generic hosted-webview archetype.
+ *  - `mpesa`    — Android runs `provider:mpesa` (Daraja STK push); same reasoning, iOS falls back
+ *    to the generic async mobile-money archetype.
  */
-val iosHostedGatewayConfigs: List<HostedGatewayConfig> =
+val iosOnlyHostedGatewayConfigs: List<HostedGatewayConfig> =
     listOf(
         HostedGatewayConfig(
             gatewayId = GatewayId("paystack"),
@@ -30,52 +38,15 @@ val iosHostedGatewayConfigs: List<HostedGatewayConfig> =
                     failureMarker = "/mock/return/failure",
                 ),
         ),
-        HostedGatewayConfig(
-            gatewayId = GatewayId("paypal"),
-            displayName = "PayPal",
-            region = "Global",
-            docsPath = "docs/providers/paypal.md",
-            blurb = "Real Orders v2 REST API when sandbox credentials are configured.",
-            capabilities = setOf(Capability.ONE_TIME_PAYMENT, Capability.CARDS),
-            status = GatewayStatus.MOCK_MODE,
-            buildCheckoutUrl = { params -> params["checkout_url"].orEmpty() },
-            matchReturn =
-                ReturnUrlMatchers.byMarker(
-                    successMarker = "/mock/return/success",
-                    failureMarker = "/mock/return/failure",
-                ),
-        ),
-        HostedGatewayConfig(
-            gatewayId = GatewayId("midtrans"),
-            displayName = "Midtrans",
-            region = "Indonesia",
-            docsPath = "docs/providers/midtrans.md",
-            blurb = "Snap Checkout — deliberately not the native SDK, which Midtrans is sunsetting Jun 2026.",
-            capabilities = setOf(Capability.ONE_TIME_PAYMENT, Capability.CARDS),
-            status = GatewayStatus.MOCK_MODE,
-            buildCheckoutUrl = { params -> params["checkout_url"].orEmpty() },
-            matchReturn =
-                ReturnUrlMatchers.byMarker(
-                    successMarker = "/mock/return/success",
-                    failureMarker = "/mock/return/failure",
-                ),
-        ),
     )
 
-val iosMobileMoneyConfigs: List<MobileMoneyConfig> =
+val iosOnlyMobileMoneyConfigs: List<MobileMoneyConfig> =
     listOf(
         MobileMoneyConfig(
             gatewayId = GatewayId("mpesa"),
             displayName = "M-Pesa",
             region = "Kenya/Tanzania",
             docsPath = "docs/providers/mpesa.md",
-            blurb = "Async mobile money — confirmation happens on the payer's phone, no in-app SDK/UI.",
-        ),
-        MobileMoneyConfig(
-            gatewayId = GatewayId("mtnmomo"),
-            displayName = "MTN MoMo",
-            region = "Africa",
-            docsPath = "docs/providers/mtnmomo.md",
             blurb = "Async mobile money — confirmation happens on the payer's phone, no in-app SDK/UI.",
         ),
     )

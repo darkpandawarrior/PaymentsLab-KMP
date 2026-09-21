@@ -4,11 +4,11 @@
  * `.framework` export (see `kmp-boundaries` skill), so the "package everything for Xcode" concern
  * lives here, separate from the feature modules it aggregates.
  *
- * Scope is intentionally narrower than the Android app's full ~65-gateway catalog: only the
- * KMP-safe archetype C (hosted-webview) and D (mobile-money) providers are wired — the native-SDK
- * archetype-A gateways (Stripe/Razorpay/Cashfree/Square/Omise/GooglePay) are Android-only by
- * construction (their SDKs don't exist on iOS). Scaling this module's gateway list to the Android
- * app's full set is the same mechanical fan-out B2 already proved, just not done here.
+ * Gateway scope now matches the Android app's config-driven catalog: `:core:gateway-catalog` is
+ * commonMain, so hosted-webview (archetype C), mobile-money (D), stub and wallet rows are read from
+ * the one list both apps share. What remains Android-only is the archetype-A native-SDK set whose
+ * vendor SDK has no iOS build at all (GooglePay), or whose iOS SDK is wired through a Swift
+ * `*CheckoutHost` here instead (Stripe/Razorpay/Cashfree/Square/Omise).
  */
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
@@ -36,8 +36,13 @@ kotlin {
             implementation(project(":core:data"))
             implementation(project(":core:orchestration"))
             implementation(project(":core:designsystem"))
+            // The shared gateway catalog — the same 55 config-driven rows the Android app reads,
+            // instead of the 5-row hand-maintained slice this module used to carry.
+            implementation(project(":core:gateway-catalog"))
+            implementation(project(":core:gateway-catalog-nonweb"))
             implementation("com.siddharth.kmp:hosted-webview:1.0.0")
             implementation("com.siddharth.kmp:mobile-money:1.0.0")
+            implementation("com.siddharth.kmp:wallet:1.0.0")
             implementation(project(":feature:lab"))
             implementation(project(":feature:checkout-demo"))
             implementation(project(":feature:history"))

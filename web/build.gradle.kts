@@ -26,6 +26,9 @@ kotlin {
             implementation("com.siddharth.kmp:hosted-webview:1.0.0")
             implementation("com.siddharth.kmp:mvi-core:1.0.0")
             implementation(project(":core:common"))
+            // The shared hosted-webview catalog — the same 44 rows Android and iOS read, instead of
+            // the 13-row hand-maintained slice this module used to carry.
+            implementation(project(":core:gateway-catalog"))
             implementation(project(":core:orchestration"))
             implementation(project(":core:designsystem"))
             implementation(project(":feature:lab"))
