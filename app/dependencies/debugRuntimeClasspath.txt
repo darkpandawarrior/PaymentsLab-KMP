@@ -229,6 +229,7 @@ com.google.mediapipe:tasks-genai:0.10.35
 com.google.mlkit:common:18.11.0
 com.google.mlkit:genai-common:1.0.0-beta3
 com.google.mlkit:genai-prompt:1.0.0-beta2
+com.google.pay.button:compose-pay-button:1.1.0
 com.google.protobuf:protobuf-javalite:4.26.1
 com.jakewharton:disklrucache:2.0.2
 com.nimbusds:nimbus-jose-jwt:10.6
