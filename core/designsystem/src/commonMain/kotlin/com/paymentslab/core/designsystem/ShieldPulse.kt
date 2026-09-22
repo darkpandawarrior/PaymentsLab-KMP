@@ -26,10 +26,10 @@ import com.siddharth.kmp.common.lerp
  * nothing about); the two are used together on Android screens, and this one alone on iOS.
  *
  * Timeline for internal progress 0->1 (mirrors Kursi's RubberStamp phase split):
- *   Phase A (0.00–PHASE_A_END): icon descends from INITIAL_SCALE via EaseInQuart.
- *   Phase B (PHASE_A_END–PHASE_B_END): overshoot to PRESS_SCALE via linear snap (unedged, for quick impulse).
- *   Phase C (PHASE_B_END–1.00): settle to 1.0x via EaseOutBack.
- *   Alpha reaches full opacity at ALPHA_COMPLETION_PROGRESS (40%), before phase A settles, so the icon
+ *   Phase A (0.00–PhaseAEnd): icon descends from InitialScale via EaseInQuart.
+ *   Phase B (PhaseAEnd–PhaseBEnd): overshoot to PressScale via linear snap (unedged, for quick impulse).
+ *   Phase C (PhaseBEnd–1.00): settle to 1.0x via EaseOutBack.
+ *   Alpha reaches full opacity at AlphaCompletionProgress (40%), before phase A settles, so the icon
  *   shows up partway through its descent rather than popping in at the very end.
  */
 @Composable
@@ -46,11 +46,11 @@ fun ShieldPulse(modifier: Modifier = Modifier) {
     val p = progress.value
     val scale =
         when {
-            p < PHASE_A_END -> lerp(INITIAL_SCALE, 1.0f, easeInQuart(p / PHASE_A_END))
-            p < PHASE_B_END -> lerp(1.0f, PRESS_SCALE, (p - PHASE_A_END) / PHASE_B_DURATION)
-            else -> lerp(PRESS_SCALE, 1.0f, easeOutBack((p - PHASE_B_END) / PHASE_C_DURATION))
+            p < PhaseAEnd -> lerp(InitialScale, 1.0f, easeInQuart(p / PhaseAEnd))
+            p < PhaseBEnd -> lerp(1.0f, PressScale, (p - PhaseAEnd) / PhaseBDuration)
+            else -> lerp(PressScale, 1.0f, easeOutBack((p - PhaseBEnd) / PhaseCDuration))
         }
-    val alpha = (p / ALPHA_COMPLETION_PROGRESS).coerceAtMost(1f)
+    val alpha = (p / AlphaCompletionProgress).coerceAtMost(1f)
 
     Icon(
         imageVector = Icons.Filled.Shield,
@@ -68,10 +68,10 @@ fun ShieldPulse(modifier: Modifier = Modifier) {
 }
 
 // Phase timeline constants for ShieldPulse animation
-private const val PHASE_A_END = 0.55f
-private const val PHASE_B_END = 0.78f
-private const val PHASE_B_DURATION = 0.23f // PHASE_B_END - PHASE_A_END
-private const val PHASE_C_DURATION = 0.22f // 1.0f - PHASE_B_END
-private const val INITIAL_SCALE = 1.6f
-private const val PRESS_SCALE = 0.92f
-private const val ALPHA_COMPLETION_PROGRESS = 0.4f
+private const val PhaseAEnd = 0.55f
+private const val PhaseBEnd = 0.78f
+private const val PhaseBDuration = 0.23f // PhaseBEnd - PhaseAEnd
+private const val PhaseCDuration = 0.22f // 1.0f - PhaseBEnd
+private const val InitialScale = 1.6f
+private const val PressScale = 0.92f
+private const val AlphaCompletionProgress = 0.4f

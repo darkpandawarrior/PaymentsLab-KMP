@@ -90,6 +90,23 @@ class PaymentsLabApplication :
                 bypassDebugger = BuildConfig.BYPASS_DEBUGGER,
             )
 
+        installKoin(crashReporter, securityConfig)
+
+        // Screen-facing defenses (FLAG_SECURE re-assert on background). Per-Activity screenshot +
+        // tapjacking protection is applied in MainActivity.
+        get<AppSecurityManager>().install(this)
+
+        auditSecurityPosture(crashReporter)
+
+        // Process-death recovery safety net for any payment left pending.
+        PaymentReconciliationWorker.enqueue(this)
+    }
+
+    /** The whole Koin graph, in one place — the only thing that knows every module. */
+    private fun installKoin(
+        crashReporter: CrashReporter,
+        securityConfig: SecurityConfig,
+    ) {
         startKoin {
             androidContext(this@PaymentsLabApplication)
             modules(
@@ -129,15 +146,15 @@ class PaymentsLabApplication :
                 homeModule,
             )
         }
+    }
 
-        // Screen-facing defenses (FLAG_SECURE re-assert on background). Per-Activity screenshot +
-        // tapjacking protection is applied in MainActivity.
-        get<AppSecurityManager>().install(this)
-
-        // VAPT audit on launch, off the main thread (file I/O + process spawn). Detection is separate
-        // from enforcement: SecurityPolicy turns the audit into an action for the current posture
-        // (strict in release, lenient in debug). Log-only here — a real app would gate card entry on
-        // a BLOCK; that decision is intentionally the app's, not the detector's.
+    /**
+     * VAPT audit on launch, off the main thread (file I/O + process spawn). Detection is separate
+     * from enforcement: SecurityPolicy turns the audit into an action for the current posture
+     * (strict in release, lenient in debug). Log-only here — a real app would gate card entry on
+     * a BLOCK; that decision is intentionally the app's, not the detector's.
+     */
+    private fun auditSecurityPosture(crashReporter: CrashReporter) {
         CoroutineScope(Dispatchers.IO).launch {
             val audit = get<SecurityAuditor>().audit()
             val posture = if (BuildConfig.DEBUG) SecurityPosture.lenient() else SecurityPosture.strict()
@@ -154,9 +171,6 @@ class PaymentsLabApplication :
                 }
             }
         }
-
-        // Process-death recovery safety net for any payment left pending.
-        PaymentReconciliationWorker.enqueue(this)
     }
 
     // WorkManager on-demand init uses this — set after startKoin so the Koin graph is ready.

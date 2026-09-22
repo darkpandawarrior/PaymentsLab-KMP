@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<SmellBaseline>
-  <ManuallySuppressedIssues/>
-  <CurrentIssues>
-    <ID>LongMethod:AppNavHost.kt:@Composable fun AppNavHost</ID>
-    <ID>LongMethod:PaymentsLabApplication.kt:PaymentsLabApplication$override fun onCreate</ID>
-  </CurrentIssues>
-</SmellBaseline>

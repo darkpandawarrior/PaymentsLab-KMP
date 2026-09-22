@@ -2,7 +2,8 @@ name: README auto-refresh
 
 # Verifies the <!-- AUTOGEN:x --> fact spans (module badge + stats) in README.md are current —
 # regenerated from settings.gradle.kts (local includes + the includeBuild(external/kmp-toolkit)
-# substitution list) and docs/screenshots by scripts/gen-readme.sh.
+# substitution list), gradle/libs.versions.toml (the Kotlin/Compose/Ktor version badges) and
+# docs/screenshots by scripts/gen-readme.sh.
 #
 # Why verify instead of auto-commit: main is meant to advance through PRs, and a bot's GITHUB_TOKEN
 # can't push to a protected branch. This runs on the PR that changes a source file and fails if the
@@ -13,6 +14,7 @@ on:
     branches: [ main ]
     paths:
       - 'settings.gradle.kts'
+      - 'gradle/libs.versions.toml'
       - 'docs/screenshots/**'
       - 'scripts/gen-readme.sh'
       - 'README.md'

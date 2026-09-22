@@ -45,8 +45,7 @@ class FakeGatewayRegistry(
 ) : PaymentGatewayRegistry {
     override fun byId(id: GatewayId): PaymentGateway? = gateways.firstOrNull { it.id == id }
 
-    override fun withCapability(capability: Capability): List<PaymentGateway> =
-        gateways.filter { capability in it.meta.capabilities }
+    override fun withCapability(capability: Capability): List<PaymentGateway> = gateways.filter { capability in it.meta.capabilities }
 }
 
 fun mixedStatusRegistry(): PaymentGatewayRegistry =

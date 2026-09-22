@@ -12,12 +12,12 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 
 /** Every wallet ledger movement nets against this single merchant/holding account. */
-internal const val WALLET_HOLDING_ACCOUNT_ID = "holding"
+internal const val WalletHoldingAccountId = "holding"
 
 /**
  * Routes for `provider:wallet` (archetype-E, "internal rail") — a double-entry ledger with no
  * external SDK. `{accountId}` is the user's wallet account id (e.g. `wallet_user1`); every debit
- * and refund nets against [WALLET_HOLDING_ACCOUNT_ID] so the ledger always balances.
+ * and refund nets against [WalletHoldingAccountId] so the ledger always balances.
  *
  * - `GET /wallet/{accountId}/balance` — pre-flight balance check ([provider.wallet.WalletGateway.prepare]).
  * - `POST /wallet/{accountId}/debit` — the "pay" movement, idempotent on `idempotencyKey`.
@@ -45,9 +45,9 @@ fun Route.walletLedgerRoutes(ledger: LedgerStore) {
 
         val txn =
             try {
-                ledger.debit(req.idempotencyKey, accountId, WALLET_HOLDING_ACCOUNT_ID, req.amountMinor)
+                ledger.debit(req.idempotencyKey, accountId, WalletHoldingAccountId, req.amountMinor)
             } catch (e: LedgerStore.InsufficientFundsException) {
-                throw BadRequestException("insufficient_funds", e.message.orEmpty())
+                throw BadRequestException("insufficient_funds", e.message.orEmpty(), e)
             }
         call.application.log.info("[wallet] debit account=$accountId txn=${txn.txnId} amount=${req.amountMinor}")
         call.respond(WalletTransactionResponse(txn.txnId, accountId, ledger.balance(accountId)))
@@ -61,9 +61,9 @@ fun Route.walletLedgerRoutes(ledger: LedgerStore) {
 
         val txn =
             try {
-                ledger.refund(req.idempotencyKey, accountId, WALLET_HOLDING_ACCOUNT_ID, req.amountMinor)
+                ledger.refund(req.idempotencyKey, accountId, WalletHoldingAccountId, req.amountMinor)
             } catch (e: LedgerStore.InsufficientFundsException) {
-                throw BadRequestException("insufficient_funds", e.message.orEmpty())
+                throw BadRequestException("insufficient_funds", e.message.orEmpty(), e)
             }
         call.application.log.info("[wallet] refund account=$accountId txn=${txn.txnId} amount=${req.amountMinor}")
         call.respond(WalletTransactionResponse(txn.txnId, accountId, ledger.balance(accountId)))

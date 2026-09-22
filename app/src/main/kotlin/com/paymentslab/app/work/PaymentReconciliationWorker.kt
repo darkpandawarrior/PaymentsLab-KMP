@@ -30,6 +30,11 @@ class PaymentReconciliationWorker(
     params: WorkerParameters,
     private val orchestrator: PaymentOrchestrator,
 ) : CoroutineWorker(appContext, params) {
+    // WorkManager's boundary: anything escaping doWork() kills the worker process instead of
+    // scheduling a retry, so this catch has to be total. recoverPending() fans out over every
+    // unresolved order and can surface any backend or storage failure; all of them mean the same
+    // thing here -- try again with backoff.
+    @Suppress("TooGenericExceptionCaught")
     override suspend fun doWork(): Result =
         try {
             val recovered = orchestrator.recoverPending()

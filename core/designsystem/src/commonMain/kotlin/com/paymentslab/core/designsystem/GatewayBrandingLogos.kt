@@ -24,16 +24,35 @@ import androidx.compose.ui.unit.dp
  * a `List<PathNode>` directly — that's what [PathParser.toNodes] produces, so no lambda is needed.
  */
 internal fun registerCuratedGatewayLogos() {
-    registerCuratedLogo("stripe", 24f, 24f, LogoPath(0xFF635BFF, PATH_STRIPE))
-    registerCuratedLogo("paypal", 24f, 24f, LogoPath(0xFF003087, PATH_PAYPAL))
-    registerCuratedLogo("googlepay", 24f, 24f, LogoPath(0xFF4285F4, PATH_GOOGLEPAY))
-    registerCuratedLogo("square", 24f, 24f, LogoPath(0xFF000000, PATH_SQUARE))
-    registerCuratedLogo("razorpay", 24f, 24f, LogoPath(0xFF0C2451, PATH_RAZORPAY))
-    registerCuratedLogo("phonepe", 24f, 24f, LogoPath(0xFF5F259F, PATH_PHONEPE))
-    registerCuratedLogo("xendit", 24f, 24f, LogoPath(0xFF4573F6, PATH_XENDIT))
+    registerCuratedLogo("stripe", LogoPath(BrandStripe, PathStripe))
+    registerCuratedLogo("paypal", LogoPath(BrandPaypal, PathPaypal))
+    registerCuratedLogo("googlepay", LogoPath(BrandGooglePay, PathGooglePay))
+    registerCuratedLogo("square", LogoPath(BrandSquare, PathSquare))
+    registerCuratedLogo("razorpay", LogoPath(BrandRazorpay, PathRazorpay))
+    registerCuratedLogo("phonepe", LogoPath(BrandPhonePe, PathPhonePe))
+    registerCuratedLogo("xendit", LogoPath(BrandXendit, PathXendit))
     // Exact `d` attribute from simple-icons/icons/paytm.svg (CC0 1.0).
-    registerCuratedLogo("paytmaio", 24f, 24f, LogoPath(0xFF002E6E, PATH_PAYTM))
+    registerCuratedLogo("paytmaio", LogoPath(BrandPaytm, PathPaytm))
 }
+
+// Each brand's official mark color, taken verbatim from the `hex` field of the matching
+// simple-icons entry (CC0 1.0) that also supplied the path below. These are the brands' own
+// colors, not design-system tokens — they must NOT be themed, dark-mode-adapted or reused for
+// anything but the logo they belong to, which is why they live here rather than in DesignTokens.
+private const val BrandStripe = 0xFF635BFF
+private const val BrandPaypal = 0xFF003087
+private const val BrandGooglePay = 0xFF4285F4
+private const val BrandSquare = 0xFF000000
+private const val BrandRazorpay = 0xFF0C2451
+private const val BrandPhonePe = 0xFF5F259F
+private const val BrandXendit = 0xFF4573F6
+private const val BrandPaytm = 0xFF002E6E
+
+/** simple-icons publishes every mark on a `viewBox="0 0 24 24"`, so all 8 paths share this. */
+private const val SimpleIconsViewportPx = 24f
+
+/** Intrinsic size of a curated mark: Material's standard icon box, so it drops into any IconButton. */
+private val LogoIntrinsicSize = 24.dp
 
 /** One `<path>`: its fill color (as Long ARGB, matching the source file's hex) and its path data. */
 private data class LogoPath(
@@ -43,17 +62,15 @@ private data class LogoPath(
 
 private fun registerCuratedLogo(
     id: String,
-    viewportWidth: Float,
-    viewportHeight: Float,
     vararg paths: LogoPath,
 ) {
     val builder =
         ImageVector.Builder(
             name = id,
-            defaultWidth = 24.dp,
-            defaultHeight = 24.dp,
-            viewportWidth = viewportWidth,
-            viewportHeight = viewportHeight,
+            defaultWidth = LogoIntrinsicSize,
+            defaultHeight = LogoIntrinsicSize,
+            viewportWidth = SimpleIconsViewportPx,
+            viewportHeight = SimpleIconsViewportPx,
         )
     paths.forEach { logoPath ->
         builder.addPath(
@@ -70,7 +87,7 @@ private fun registerCuratedLogo(
 }
 
 // Exact `d` attribute from simple-icons/icons/stripe.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_STRIPE =
+private const val PathStripe =
     "M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 " +
         "4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 " +
         "1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 " +
@@ -79,14 +96,14 @@ private const val PATH_STRIPE =
         "2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"
 
 // Exact `d` attribute from simple-icons/icons/paypal.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_PAYPAL =
+private const val PathPaypal =
     "M15.607 4.653H8.941L6.645 19.251H1.82L4.862 0h7.995c3.754 0 6.375 2.294 6.473 5.513-.648-.478" +
         "-2.105-.86-3.722-.86m6.57 5.546c0 3.41-3.01 6.853-6.958 6.853h-2.493L11.595 24H6.74l1.845" +
         "-11.538h3.592c4.208 0 7.346-3.634 7.153-6.949a5.24 5.24 0 0 1 2.848 4.686M9.653 5.546h6.408" +
         "c.907 0 1.942.222 2.363.541-.195 2.741-2.655 5.483-6.441 5.483H8.714Z"
 
 // Exact `d` attribute from simple-icons/icons/googlepay.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_GOOGLEPAY =
+private const val PathGooglePay =
     "M3.963 7.235A3.963 3.963 0 00.422 9.419a3.963 3.963 0 000 3.559 3.963 3.963 0 003.541 " +
         "2.184c1.07 0 1.97-.352 2.627-.957.748-.69 1.18-1.71 1.18-2.916a4.722 4.722 0 00-.07-.806H3" +
         ".964v1.526h2.14a1.835 1.835 0 01-.79 1.205c-.356.241-.814.379-1.35.379-1.034 0-1.911-.697" +
@@ -104,19 +121,19 @@ private const val PATH_GOOGLEPAY =
         "-.232.708.708 0 01-.293-.578c0-.257.12-.47.363-.647.24-.173.54-.26.9-.26Z"
 
 // Exact `d` attribute from simple-icons/icons/square.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_SQUARE =
+private const val PathSquare =
     "M4.01 0A4.01 4.01 0 000 4.01v15.98c0 2.21 1.8 4 4.01 4.01h15.98C22.2 24 24 22.2 24 19.99V4" +
         "A4.01 4.01 0 0019.99 0H4zm1.62 4.36h12.74c.7 0 1.26.57 1.26 1.27v12.74c0 .7-.56 1.27-1.26" +
         " 1.27H5.63c-.7 0-1.26-.57-1.26-1.27V5.63a1.27 1.27 0 011.26-1.27zm3.83 4.35a.73.73 0 00" +
         "-.73.73v5.09c0 .4.32.72.72.72h5.1a.73.73 0 00.73-.72V9.44a.73.73 0 00-.73-.73h-5.1Z"
 
 // Exact `d` attribute from simple-icons/icons/razorpay.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_RAZORPAY =
+private const val PathRazorpay =
     "M22.436 0l-11.91 7.773-1.174 4.276 6.625-4.297L11.65 24h4.391l6.395-24zM14.26 10.098L3.389 " +
         "17.166 1.564 24h9.008l3.688-13.902Z"
 
 // Exact `d` attribute from simple-icons/icons/phonepe.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_PHONEPE =
+private const val PathPhonePe =
     "M10.206 9.941h2.949v4.692c-.402.201-.938.268-1.34.268-1.072 0-1.609-.536-1.609-1.743V9.941zm" +
         "13.47 4.816c-1.523 6.449-7.985 10.442-14.433 8.919C2.794 22.154-1.199 15.691.324 9.243 " +
         "1.847 2.794 8.309-1.199 14.757.324c6.449 1.523 10.442 7.985 8.919 14.433zm-6.231-5.888a" +
@@ -127,14 +144,14 @@ private const val PATH_PHONEPE =
         ".335-.335v-.67z"
 
 // Exact `d` attribute from simple-icons/icons/xendit.svg (CC0 1.0) — fetched live via Step 1.
-private const val PATH_XENDIT =
+private const val PathXendit =
     "M11.781 2.743H7.965l-5.341 9.264 5.341 9.263-1.312 2.266L0 12.007 6.653.464h6.454l-1.326 " +
         "2.279Zm-5.128 2.28 1.312-2.28L9.873 6.03 8.561 8.296 6.653 5.023Zm9.382-2.28 1.312 2.28" +
         "L7.965 21.27l-1.312-2.279 9.382-16.248Zm-5.128 20.793 1.298-2.279h3.83L14.1 17.931l1.312" +
         "-2.267 1.926 3.337 4.038-6.994-5.341-9.264L17.347.464 24 12.007l-6.653 11.529h-6.44Z"
 
 // Exact `d` attribute from simple-icons/icons/paytm.svg (CC0 1.0).
-private const val PATH_PAYTM =
+private const val PathPaytm =
     "M15.85 8.167a.204.204 0 0 0-.04.004c-.68.19-.543 1.148-1.781 1.23h-.12a.23.23 0 0 0-.052.005h" +
         "-.001a.24.24 0 0 0-.184.235v1.09c0 .134.106.241.237.241h.645v4.623c0 .132.104.238.233.238h" +
         "1.058a.236.236 0 0 0 .233-.238v-4.623h.6c.13 0 .236-.107.236-.241v-1.09a.239.239 0 0 0" +

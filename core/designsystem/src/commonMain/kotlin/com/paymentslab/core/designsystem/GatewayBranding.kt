@@ -69,7 +69,13 @@ object GatewayBranding {
 private fun String.stableHashIndex(bucketCount: Int): Int {
     var hash = 0
     for (char in this) {
-        hash = (hash * 31 + char.code) and 0x7FFFFFFF
+        hash = (hash * HashMultiplier + char.code) and PositiveIntMask
     }
     return hash % bucketCount
 }
+
+/** The multiplier `String.hashCode()` is specified with; pinned here so the index never moves. */
+private const val HashMultiplier = 31
+
+/** Clears the sign bit, so the running hash stays non-negative and `%` yields a valid bucket. */
+private const val PositiveIntMask = 0x7FFFFFFF

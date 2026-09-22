@@ -15,6 +15,7 @@ import com.paymentslab.core.orchestration.PaymentFlowRunner
 import com.paymentslab.core.orchestration.fsm.PaymentPhase
 import com.paymentslab.feature.lab.explain.GatewayFailure
 import com.paymentslab.feature.lab.explain.RecordedFlowStore
+import com.siddharth.kmp.common.AppLog
 import com.siddharth.kmp.designsystem.StepState
 import com.siddharth.kmp.designsystem.TimelineStep
 import com.siddharth.kmp.mvi.StateViewModel
@@ -110,6 +111,10 @@ class ProviderLabViewModel(
 ) : StateViewModel<ProviderLabUiState>(ProviderLabUiState()) {
     val uiState: StateFlow<ProviderLabUiState> get() = state
 
+    // The UI boundary: anything escaping here cancels the viewModelScope and the screen freezes
+    // mid-run, so the catch is total by design. The flow reaches into gateway SDKs whose throw
+    // surface this module does not own. CancellationException is rethrown first.
+    @Suppress("TooGenericExceptionCaught")
     @OptIn(ExperimentalUuidApi::class)
     fun start(
         host: PaymentHost,
@@ -152,7 +157,11 @@ class ProviderLabViewModel(
             } catch (ce: CancellationException) {
                 throw ce
             } catch (t: Throwable) {
-                setState { copy(isRunning = false) }
+                // Was `setState { copy(isRunning = false) }` and nothing else: a crashed run left the
+                // lab showing a half-drawn timeline with no verdict, and the cause never reached a
+                // log. Report it as a terminal failure and log the cause.
+                AppLog.e("Provider lab run failed for gateway=${gatewayId.value}", t, tag = Tag)
+                setState { copy(isRunning = false, finalStatus = PaymentStatus.FAILED) }
             }
         }
     }
@@ -210,3 +219,5 @@ class ProviderLabViewModel(
         const val TAG = "ProviderLabViewModel"
     }
 }
+
+private const val Tag = "ProviderLabViewModel"
