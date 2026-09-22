@@ -69,6 +69,11 @@ foundation = { module = "org.jetbrains.compose.foundation:foundation", version.r
 runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose-multiplatform" }
 ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose-multiplatform" }
 ui-tooling-preview-mp = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose-multiplatform" }
+# The preview RENDERER for the multiplatform modules, distinct from the annotation above and from
+# `compose-ui-tooling` below (which is the AndroidX/BOM view, used by the android-only :app module).
+# Android-only artifact: previews are drawn by the Android preview tooling even when the composable
+# is in commonMain, so this goes on `androidRuntimeClasspath`, never in a shared source set.
+ui-tooling-mp = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose-multiplatform" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose-multiplatform" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose-multiplatform" }

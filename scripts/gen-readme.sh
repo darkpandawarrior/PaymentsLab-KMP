@@ -6,6 +6,7 @@ cd "$(dirname "$0")/.."
 
 README="README.md"
 SETTINGS="settings.gradle.kts"
+CATALOG="gradle/libs.versions.toml"
 SHOTS_DIR="docs/screenshots"
 
 # grep -c exits 1 (not 0) when a pattern matches zero lines — under `set -e` that aborts the whole
@@ -30,6 +31,27 @@ composed_cores=$(( composed_total - composed_providers ))
 grand_total=$(( local_total + composed_total ))
 shots=$(find "$SHOTS_DIR" -maxdepth 1 -name '*.png' | wc -l | tr -d ' ')
 
+# --- toolchain versions: read from the version catalog, not typed by hand ---
+# Hand-typed version badges are the least checkable claim in a README: they look authoritative and
+# nothing compares them to the build. These three had drifted to Kotlin 2.4.20-RC, Compose MP
+# 1.12.0-rc01 and Ktor 3.5.1 while the catalog said 2.4.20, 1.13.0-alpha01 and 3.6.0.
+# shields.io escaping: a literal '-' in a badge's message must be doubled.
+catalog_version() { # $1 = TOML key at the start of a line in [versions]
+  sed -n "s/^$1[[:space:]]*=[[:space:]]*\"\([^\"]*\)\".*/\1/p" "$CATALOG" | head -1
+}
+shield() { printf '%s' "${1//-/--}"; }
+
+kotlin_v=$(shield "$(catalog_version kotlin)")
+cmp_v=$(shield "$(catalog_version compose-multiplatform)")
+ktor_v=$(shield "$(catalog_version ktor)")
+
+versions="<!-- AUTOGEN:versions -->
+![Kotlin](https://img.shields.io/badge/Kotlin-${kotlin_v}-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose%20MP-${cmp_v}-4285F4?logo=jetpackcompose&logoColor=white)
+![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Web-3DDC84)
+![Ktor](https://img.shields.io/badge/Ktor-${ktor_v}-087CFA?logo=ktor&logoColor=white)
+<!-- /AUTOGEN:versions -->"
+
 badge="<!-- AUTOGEN:badge -->
 ![Modules](https://img.shields.io/badge/modules-${grand_total}-success)
 <!-- /AUTOGEN:badge -->"
@@ -44,6 +66,8 @@ replace_block() {   # $1=tag  $2=replacement (marker lines included)
   ' "$README"
 }
 
+replace_block "versions" "$versions"
 replace_block "badge" "$badge"
 replace_block "stats" "$stats"
+echo "[gen-readme] kotlin=$kotlin_v cmp=$cmp_v ktor=$ktor_v"
 echo "[gen-readme] total=$grand_total (local=$local_total: ${local_cores}c/${local_features}f/${local_providers}p/${local_other}o + composed=$composed_total: ${composed_cores}c/${composed_providers}p) shots=$shots"
