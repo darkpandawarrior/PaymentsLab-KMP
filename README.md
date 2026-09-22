@@ -10,10 +10,12 @@ Ktor backend owns order creation, real HMAC signature verification and webhook r
 because a client-side `Success` is only ever a hint.
 
 [![CI](https://github.com/darkpandawarrior/PaymentsLab-KMP/actions/workflows/ci.yml/badge.svg)](https://github.com/darkpandawarrior/PaymentsLab-KMP/actions/workflows/ci.yml)
+<!-- AUTOGEN:versions -->
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin&logoColor=white)
 ![Compose Multiplatform](https://img.shields.io/badge/Compose%20MP-1.13.0--alpha01-4285F4?logo=jetpackcompose&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Web-3DDC84)
-![Ktor](https://img.shields.io/badge/Ktor-3.5.1-087CFA?logo=ktor&logoColor=white)
+![Ktor](https://img.shields.io/badge/Ktor-3.6.0-087CFA?logo=ktor&logoColor=white)
+<!-- /AUTOGEN:versions -->
 <!-- AUTOGEN:badge -->
 ![Modules](https://img.shields.io/badge/modules-46-success)
 <!-- /AUTOGEN:badge -->
@@ -621,6 +623,20 @@ gateway auto-degrades to `MOCK_MODE`; set → it upgrades to real, no code chang
   that implement the real interfaces; mocks are reserved for external services.
 - **Backend.** Ktor `testApplication` asserts server-authoritative pricing, a **real** Razorpay
   HMAC-SHA256 pass/fail, idempotent webhook dedup, and 400s on unknown item/gateway.
+- **Previews.** `core/designsystem` carries the repo's `@Preview` set
+  ([`Previews.kt`](core/designsystem/src/commonMain/kotlin/com/paymentslab/core/designsystem/Previews.kt)):
+  every `GatewayStatusUi` badge, the verified-vs-unverified `PaymentFlowDiagram` pair (the one idea
+  worth stealing, pinned as a picture), the amount/terminal/action chrome, and a 240dp narrow case.
+  Scoped to the design system because that is the module every feature renders through. Previews
+  need TWO artifacts: `org.jetbrains.compose.ui:ui-tooling-preview` for the annotation in
+  `commonMain`, `org.jetbrains.compose.ui:ui-tooling` on `androidRuntimeClasspath` for the renderer
+  (`:app`, being a plain Android module, gets the AndroidX equivalent via `debugImplementation`).
+  The annotation is `androidx.compose.ui.tooling.preview.Preview` — the multiplatform one since
+  Compose Multiplatform 1.10; the `org.jetbrains.compose` namespaced one is deprecated.
+- **README version badges are generated.** `scripts/gen-readme.sh` now fills the
+  `<!-- AUTOGEN:versions -->` span from `gradle/libs.versions.toml`, and `readme.yml` fails a PR
+  whose spans drifted. They had: the badges advertised Kotlin 2.4.20-RC, Compose MP 1.12.0-rc01 and
+  Ktor 3.5.1 against a catalog that said 2.4.20, 1.13.0-alpha01 and 3.6.0.
 - **Static analysis.** ktlint and detekt run across every module, detekt is pointed at the KMP
   `commonMain`/`androidMain` source sets, not just `src/main`, so the core and features are actually
   analyzed.

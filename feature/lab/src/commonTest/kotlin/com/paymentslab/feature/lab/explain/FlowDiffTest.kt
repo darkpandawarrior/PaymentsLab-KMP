@@ -66,8 +66,7 @@ private fun clientSuccess() =
 private fun clientAwaitingWebhook() =
     PaymentStep.ClientResult(PaymentResult.Pending(PendingReason.AWAITING_WEBHOOK), payload = RedactedPayload.EMPTY)
 
-private fun settled(status: PaymentStatus) =
-    PaymentStep.Settled(status, PaymentSnapshot("order-1", "pay-1", status), RedactedPayload.EMPTY)
+private fun settled(status: PaymentStatus) = PaymentStep.Settled(status, PaymentSnapshot("order-1", "pay-1", status), RedactedPayload.EMPTY)
 
 /** A single, ordinary single-leg run: order → launch → client success → settled SUCCESS. */
 private fun happyPathTrace(gatewayId: GatewayId): List<PaymentStep> =

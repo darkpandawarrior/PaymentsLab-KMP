@@ -11,6 +11,7 @@ import com.paymentslab.core.designsystem.TimelineCopy
 import com.paymentslab.core.designsystem.VerifyingCopy
 import com.paymentslab.core.designsystem.toTimelineStep
 import com.paymentslab.core.orchestration.PaymentFlowRunner
+import com.siddharth.kmp.common.AppLog
 import com.siddharth.kmp.designsystem.StepState
 import com.siddharth.kmp.designsystem.TimelineStep
 import com.siddharth.kmp.mvi.StateViewModel
@@ -128,6 +129,10 @@ class CheckoutViewModel(
         setState { copy(selectedGatewayId = gatewayId, idempotencyKey = null) }
     }
 
+    // The UI boundary: anything escaping here cancels the viewModelScope and the screen freezes
+    // mid-run, so the catch is total by design. The flow reaches into gateway SDKs whose throw
+    // surface this module does not own. CancellationException is rethrown first.
+    @Suppress("TooGenericExceptionCaught")
     @OptIn(ExperimentalUuidApi::class)
     fun pay(host: PaymentHost) {
         val current = currentState
@@ -168,7 +173,11 @@ class CheckoutViewModel(
             } catch (ce: CancellationException) {
                 throw ce
             } catch (t: Throwable) {
-                setState { copy(isRunning = false) }
+                // Was `setState { copy(isRunning = false) }` and nothing else: a crashed run left the
+                // UI with the spinner off, a half-drawn timeline and no failure anywhere on screen,
+                // and the cause never reached a log. Report it as a terminal failure and log the cause.
+                AppLog.e("Checkout run failed for gateway=${current.selectedGatewayId?.value}", t, tag = Tag)
+                setState { copy(isRunning = false, finalStatus = PaymentStatus.FAILED) }
             }
         }
     }
@@ -196,3 +205,5 @@ class CheckoutViewModel(
         const val TAG = "CheckoutViewModel"
     }
 }
+
+private const val Tag = "CheckoutViewModel"

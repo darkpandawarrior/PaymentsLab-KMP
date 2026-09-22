@@ -13,7 +13,7 @@ import org.junit.Test
 /** Unit tests for the double-entry ledger backing `provider:wallet` — no Ktor server involved. */
 class LedgerStoreTest {
     private val wallet = "wallet_user1"
-    private val holding = WALLET_HOLDING_ACCOUNT_ID
+    private val holding = WalletHoldingAccountId
 
     @Test
     fun `unbalanced transaction is rejected`() {

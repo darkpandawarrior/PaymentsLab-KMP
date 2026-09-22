@@ -57,6 +57,11 @@ class KtorPayoutBackend(
             response.toSnapshot()
         }
 
+    // A transport boundary, so the catch has to be total: Ktor's throw surface is engine-specific
+    // (OkHttp on Android, Darwin on iOS, fetch on wasmJs all raise different types) and there is no
+    // portable narrower set to name. CancellationException is rethrown above so structured
+    // concurrency still works; everything else becomes one domain exception callers can handle.
+    @Suppress("TooGenericExceptionCaught")
     private inline fun <T> request(
         label: String,
         block: () -> T,

@@ -10,12 +10,17 @@ sealed class ApiException(
     val status: HttpStatusCode,
     val code: String,
     override val message: String,
-) : RuntimeException(message)
+    cause: Throwable? = null,
+) : RuntimeException(message, cause)
 
 class BadRequestException(
     code: String,
     message: String,
-) : ApiException(HttpStatusCode.BadRequest, code, message)
+    // A 4xx translated from a domain exception keeps that exception as its cause, so the server log
+    // still carries the original stack. Without it the translation silently discards the only
+    // evidence of what actually failed.
+    cause: Throwable? = null,
+) : ApiException(HttpStatusCode.BadRequest, code, message, cause)
 
 class NotFoundException(
     code: String,

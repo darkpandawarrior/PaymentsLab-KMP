@@ -61,10 +61,10 @@ fun FailureShake(
     LaunchedEffect(Unit) {
         if (!reducedMotion) {
             repeat(3) {
-                offsetX.animateTo(SHAKE_AMPLITUDE_DP, tween(SHAKE_STEP_MS))
-                offsetX.animateTo(-SHAKE_AMPLITUDE_DP, tween(SHAKE_STEP_MS))
+                offsetX.animateTo(ShakeAmplitudeDp, tween(ShakeStepMs))
+                offsetX.animateTo(-ShakeAmplitudeDp, tween(ShakeStepMs))
             }
-            offsetX.animateTo(0f, tween(SHAKE_STEP_MS))
+            offsetX.animateTo(0f, tween(ShakeStepMs))
         }
     }
     Box(
@@ -85,5 +85,5 @@ fun FailureShake(
     }
 }
 
-private const val SHAKE_STEP_MS = 60
-private const val SHAKE_AMPLITUDE_DP = 10f
+private const val ShakeStepMs = 60
+private const val ShakeAmplitudeDp = 10f

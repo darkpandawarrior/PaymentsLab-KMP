@@ -37,3 +37,17 @@ kotlin {
         }
     }
 }
+
+// The preview RENDERER. `libs.ui.tooling.preview.mp` above gives commonMain the @Preview
+// ANNOTATION; without this artifact on the Android runtime classpath the IDE has nothing to draw
+// them with. Two dependencies, not one — that split is the usual reason previews render nothing.
+//
+// `androidRuntimeClasspath` is the configuration the AGP KMP library plugin
+// (com.android.kotlin.multiplatform.library, applied by `shared.kmp.compose`) exposes. :app is a
+// plain Android application module and already has the AndroidX equivalent via
+// `debugImplementation(libs.compose.ui.tooling)` — different configuration, different artifact
+// group, same job. Declared per-module rather than in the shared convention plugin, which is a
+// submodule every repo in the family consumes.
+dependencies {
+    "androidRuntimeClasspath"(libs.ui.tooling.mp)
+}

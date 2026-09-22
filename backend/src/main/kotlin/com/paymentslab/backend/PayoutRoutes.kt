@@ -71,7 +71,7 @@ fun Route.payoutRoutes(store: PayoutStore) {
         store.get(payoutId)
             ?: throw NotFoundException("unknown_payout", "No payout: $payoutId")
         val outcome = call.request.queryParameters["outcome"] ?: "settled"
-        val delayMs = call.request.queryParameters["delayMs"]?.toLongOrNull() ?: DEFAULT_SETTLE_DELAY_MS
+        val delayMs = call.request.queryParameters["delayMs"]?.toLongOrNull() ?: DefaultSettleDelayMs
 
         call.application.launch {
             delay(delayMs)
@@ -83,7 +83,7 @@ fun Route.payoutRoutes(store: PayoutStore) {
     }
 }
 
-private const val DEFAULT_SETTLE_DELAY_MS = 3_000L
+private const val DefaultSettleDelayMs = 3_000L
 
 private fun PayoutStore.PayoutRecord.toResponse() =
     PayoutResponse(

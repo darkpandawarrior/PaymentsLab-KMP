@@ -132,7 +132,15 @@ class PaymentOrchestrator(
             }
         }
 
-    /** Reverse the wallet leg's debit — the split-payment compensating credit. */
+    /**
+     * Reverse the wallet leg's debit — the split-payment compensating credit.
+     *
+     * Compensation is the last line of defence against a half-charged user, so a failure here is
+     * reported, never propagated: letting it escape would abort the flow with the wallet leg still
+     * debited and no Errored step emitted. CancellationException is rethrown first, hence the
+     * suppression rather than a narrower catch.
+     */
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun compensateWalletLeg(
         walletLedgerPort: WalletLedgerPort,
         walletAccountId: String,
@@ -162,7 +170,13 @@ class PaymentOrchestrator(
      * Drives the FSM for one leg to a terminal state, optionally capping the created order's amount
      * to [capAmount] (used by the split's wallet leg, which pays only a portion of the priced order).
      * Shared by [pay] and [paySplit] so both go through the identical, fully-tested reducer loop.
+     *
+     * The FSM boundary. A payment that throws must still be resolved in the journal and reported as
+     * a terminal step, otherwise process-death recovery finds a pending row forever. Effects call
+     * into gateway SDKs whose throw surface this module does not own, so the catch is total by
+     * necessity; CancellationException is rethrown first.
      */
+    @Suppress("TooGenericExceptionCaught")
     private suspend fun driveFsm(
         host: PaymentHost,
         gateway: PaymentGateway,
@@ -312,7 +326,12 @@ class PaymentOrchestrator(
      * Cold-start recovery: for every payment written to the journal but never resolved (app died
      * mid-flight), ask the server what actually happened and settle the row. Called on app launch
      * and by the WorkManager reconciliation worker.
+     *
+     * Per-order isolation: one unreachable order must not abort the whole recovery sweep, so each
+     * iteration absorbs anything the backend raises and moves on. CancellationException is rethrown
+     * so cancelling the sweep still works, hence the suppression rather than a narrower catch.
      */
+    @Suppress("TooGenericExceptionCaught")
     suspend fun recoverPending(): List<PaymentSnapshot> {
         val recovered = mutableListOf<PaymentSnapshot>()
         for (pending in journal.unresolved()) {
