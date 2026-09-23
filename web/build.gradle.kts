@@ -1,5 +1,5 @@
 /**
- * Browser preview shell (Kursi `cmp-web` pattern): a wasmJs executable that runs the gateway
+ * Browser preview shell (Gaddi `cmp-web` pattern): a wasmJs executable that runs the gateway
  * catalog + explained-checkout demo entirely in MOCK_MODE — in-memory backend/journal fakes, the
  * real orchestrator FSM and hosted-webview archetype underneath. `wasmJsBrowserDistribution`
  * output is what cv-siddharth embeds as `public/paymentslab-app/`.

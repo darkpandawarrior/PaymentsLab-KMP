@@ -25,7 +25,7 @@ import com.siddharth.kmp.common.lerp
  * `core:security`'s `SecureScreen`, an Android-only `FLAG_SECURE` mechanism this composable knows
  * nothing about); the two are used together on Android screens, and this one alone on iOS.
  *
- * Timeline for internal progress 0->1 (mirrors Kursi's RubberStamp phase split):
+ * Timeline for internal progress 0->1 (mirrors Gaddi's RubberStamp phase split):
  *   Phase A (0.00–PhaseAEnd): icon descends from InitialScale via EaseInQuart.
  *   Phase B (PhaseAEnd–PhaseBEnd): overshoot to PressScale via linear snap (unedged, for quick impulse).
  *   Phase C (PhaseBEnd–1.00): settle to 1.0x via EaseOutBack.

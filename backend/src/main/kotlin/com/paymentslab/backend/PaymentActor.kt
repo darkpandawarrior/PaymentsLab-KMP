@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
  * Linearizes every mutation of a [PaymentStore] record through one consumer coroutine, so concurrent
  * requests for the same order (a client's `/verify` racing a provider webhook, or two redelivered
  * webhooks) never interleave a check-then-act sequence — idempotency without DB row locks. Mirrors
- * Kursi's `MatchActor` channel-actor pattern (single [Channel] + sealed `Command` + one consumer
+ * Gaddi's `MatchActor` channel-actor pattern (single [Channel] + sealed `Command` + one consumer
  * loop), generalized from match-state to payment-state.
  */
 class PaymentActor(

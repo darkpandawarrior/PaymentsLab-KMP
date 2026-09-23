@@ -109,7 +109,7 @@ complexity:
 
 # -----------------------------------------------------------------------------
 coroutines:
-  # These catch real structured-concurrency bugs and cost nothing — PaymentsLab was
+  # These catch real structured-concurrency bugs and cost nothing — PaymentsLab-KMP was
   # simply never given them.
   active: true
   GlobalCoroutineUsage:
@@ -133,7 +133,7 @@ exceptions:
   TooGenericExceptionCaught:
     excludes: *notOurs
     active: true
-    # DELIBERATELY OVERTURNING PaymentsLab's previous `active: false`. The recorded family
+    # DELIBERATELY OVERTURNING PaymentsLab-KMP's previous `active: false`. The recorded family
     # reason elsewhere was "runCatching { } is idiomatic"; that reason does not hold — this
     # rule fires on `catch` clauses and runCatching {} has none, it returns a Result.
     # Genuine `catch (e: Exception)` sites must be narrowed or named `_`/`ignored`.
@@ -148,7 +148,7 @@ exceptions:
     allowedExceptionNameRegex: '_|(ignored)'
   SwallowedException:
     excludes: *notOurs
-    active: true                  # Overturns PaymentsLab's `active: false`. A swallowed
+    active: true                  # Overturns PaymentsLab-KMP's `active: false`. A swallowed
                                   # exception in a payments orchestrator is the bug you get
                                   # paged for; this is the last rule to turn off in this repo.
   TooGenericExceptionThrown:
@@ -215,7 +215,7 @@ style:
   MagicNumber:
     excludes: *notOurs
     active: true
-    # NOT AN ARTEFACT RULE. Overturns PaymentsLab's previous `active: false` outright.
+    # NOT AN ARTEFACT RULE. Overturns PaymentsLab-KMP's previous `active: false` outright.
     # A bare 111320.0 in a Kalman smoother, or a bare 504 in a status mapper, is the exact
     # defect this rule exists to catch. Turning MagicNumber off to make a number go down is
     # rubber-stamping the debt.

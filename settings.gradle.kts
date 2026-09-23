@@ -23,14 +23,14 @@ plugins {
 dependencyResolutionManagement {
     // PREFER_SETTINGS (not FAIL_ON_PROJECT_REPOS): the Kotlin/Wasm Node.js toolchain setup plugin
     // adds a nodejs distribution repo programmatically at project-level; FAIL_ON_PROJECT_REPOS
-    // rejects that and breaks :web. PREFER_SETTINGS still uses settings repos first. Mirrors Kursi.
+    // rejects that and breaks :web. PREFER_SETTINGS still uses settings repos first. Mirrors Gaddi.
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
         // Node.js / Yarn / Binaryen distributions for the Kotlin/Wasm browser toolchain (:web) —
-        // ivy layouts ported from Kursi's settings.gradle.kts, where they're build-proven.
+        // ivy layouts ported from Gaddi's settings.gradle.kts, where they're build-proven.
         ivy {
             name = "Node.js Distributions"
             url = uri("https://nodejs.org/dist")

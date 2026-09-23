@@ -48,7 +48,7 @@
         // Main.kt uses ComposeViewport(document.body!!), which creates and appends its OWN
         // <canvas>. Do NOT add a manual <canvas id="ComposeTarget"> — that belongs to the older
         // CanvasBasedWindow API, and a stray full-size canvas would sit over Compose's real one and
-        // swallow all pointer input (learned in Kursi's cmp-web). Hide the loader as soon as
+        // swallow all pointer input (learned in Gaddi's cmp-web). Hide the loader as soon as
         // Compose's canvas is inserted; 8s hard fallback for a slow link.
         const loader = document.getElementById('loader');
         const hide = () => loader.classList.add('hidden');

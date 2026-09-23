@@ -19,7 +19,7 @@ kotlin {
             implementation("com.siddharth.kmp:payments-api:1.0.0")
             // StepTimeline/TimelineStep/StepState/PayloadCard/RedactionReveal/AnimatedCounter now
             // live in :designsystem (backlog #30/#31); StepMapper.kt's public toTimelineStep()
-            // returns TimelineStep, so this is `api`, matching HireSignal's precedent for the
+            // returns TimelineStep, so this is `api`, matching Candidai's precedent for the
             // same coordinate.
             api("com.siddharth.kmp:designsystem:1.0.0")
             implementation(project(":core:common"))

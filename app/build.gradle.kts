@@ -69,7 +69,7 @@ android {
         applicationId = "com.paymentslab.app"
         // Bumped 24 -> 26 for this lane: :ai's on-device LLM tier (ML Kit GenAI / MediaPipe) ships
         // an AndroidManifest with minSdkVersion 26 and the manifest merger hard-fails an app below
-        // that (HireSignal, the other family app on this AI stack, is minSdk 26 for the same
+        // that (Candidai, the other family app on this AI stack, is minSdk 26 for the same
         // reason). A real device-support change, not a version bump — see the PR body.
         minSdk = 26
         targetSdk = 36
@@ -135,7 +135,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            buildConfigField("String", "BACKEND_URL", "\"https://api.paymentslab.example\"")
+            buildConfigField("String", "BACKEND_URL", "\"https://api.paymentslab-kmp.example\"")
             signingConfig =
                 if (hasReleaseSigning) {
                     signingConfigs.getByName("release")
