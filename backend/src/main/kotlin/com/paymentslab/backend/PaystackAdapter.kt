@@ -55,7 +55,7 @@ class PaystackAdapter(
                     contentType(ContentType.Application.Json)
                     setBody(
                         PaystackInitializeRequest(
-                            email = "sandbox@paymentslab.example",
+                            email = "sandbox@paymentslab-kmp.example",
                             amount = item.amountMinor.toString(),
                             currency = item.currency,
                             reference = orderId,

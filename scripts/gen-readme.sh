@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Regenerates ONLY the <!-- AUTOGEN:x --> spans in README.md from source-of-truth in code.
-# Hand-written prose outside the markers is never touched. See the Mileway twin for notes.
+# Hand-written prose outside the markers is never touched. See the Doori twin for notes.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

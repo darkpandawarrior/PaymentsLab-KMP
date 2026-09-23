@@ -22,7 +22,7 @@ because a client-side `Success` is only ever a hint.
 
 **[Highlights](#highlights)** · **[Screens & flows](#screens--flows)** · **[Architecture](#architecture)** · **[Getting started](#getting-started)** · **[Roadmap](#roadmap)**
 
-**Case study:** [PaymentsLab-KMP](https://cv-siddharth.vercel.app/project/paymentslab) &nbsp;·&nbsp; **Sibling project:** [Doori](https://github.com/darkpandawarrior/Doori) (offline-first mileage/expense) &nbsp;·&nbsp; built on the shared **`kmp-build-logic`** convention plugins + **`kmp-mvi-core`** MVI runtime (see [Shared infrastructure](#shared-infrastructure))
+**Case study:** [PaymentsLab-KMP](https://siddharth-pandalai.vercel.app/project/paymentslab-kmp) &nbsp;·&nbsp; **Sibling project:** [Doori](https://github.com/darkpandawarrior/Doori) (offline-first mileage/expense) &nbsp;·&nbsp; built on the shared **`kmp-build-logic`** convention plugins + **`kmp-mvi-core`** MVI runtime (see [Shared infrastructure](#shared-infrastructure))
 
 </div>
 

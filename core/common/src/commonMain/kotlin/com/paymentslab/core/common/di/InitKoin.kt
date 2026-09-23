@@ -8,12 +8,12 @@ import org.koin.dsl.KoinAppDeclaration
 import org.koin.mp.KoinPlatform
 
 /**
- * Shared Koin bootstrap, lifted verbatim (pattern + re-entrancy guard) from Mileway's
+ * Shared Koin bootstrap, lifted verbatim (pattern + re-entrancy guard) from Doori's
  * `core/ui/.../di/InitKoin.kt`. Always wires [platformModule] first, then the caller's [modules].
  *
  * Not yet called by `PaymentsLabApplication` (it still calls `startKoin` directly with its full
  * Android module list) — this is groundwork for the future `iosApp` entry point, which will call this
- * the same way Mileway's `MainViewController` does. Wiring the Android app onto this is a mechanical,
+ * the same way Doori's `MainViewController` does. Wiring the Android app onto this is a mechanical,
  * behavior-preserving follow-up once there's a second caller to unify against.
  */
 fun initKoin(

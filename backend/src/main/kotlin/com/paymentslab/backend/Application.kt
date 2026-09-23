@@ -92,7 +92,7 @@ fun Application.module(config: ServerConfig = ServerConfig.fromEnv()) {
                     httpClient = outboundHttpClient,
                 ),
                 UpiIntentAdapter(
-                    payeeVpa = "paymentslab@upi",
+                    payeeVpa = "paymentslab-kmp@upi",
                     payeeName = "PaymentsLab-KMP",
                     merchantCategoryCode = "5411",
                 ),

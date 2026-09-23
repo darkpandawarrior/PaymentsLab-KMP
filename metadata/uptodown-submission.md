@@ -34,7 +34,7 @@ product — say that plainly in the listing, same as the F-Droid metadata alread
 2. Package name: `com.paymentslab.app` (must match exactly).
 3. Upload the signed APK. Use the exact release asset, not a glob — the release also carries an
    unsigned or differently-named release build alongside it:
-   `https://github.com/darkpandawarrior/PaymentsLab/releases/download/v2026.08.35.1.174/PaymentsLab-v2026.08.35.1.174.apk`
+   `https://github.com/darkpandawarrior/PaymentsLab-KMP/releases/download/v2026.08.35.1.174/PaymentsLab-v2026.08.35.1.174.apk`
    (signing cert SHA-256: `e3cd9ed25baaa6db5501621a2a7399edc0878022f9b64b5d95446db0348dd19c` — verify
    with `apksigner verify --print-certs` before uploading).
 4. Icon: Uptodown wants a square PNG, ≥256×256, corners rounded by the site itself. PaymentsLab-KMP
@@ -77,7 +77,7 @@ Platforms: Android is the primary target and what you are looking at in this lis
 
 Honest caveats: this is a portfolio and demonstration project, not a production payments app, and it is not on the Play Store as a live transactional product. The gateway SDKs are proprietary and talk to proprietary payment networks.
 
-Source is fully available and the project is GPL-3.0-or-later, at https://github.com/darkpandawarrior/PaymentsLab. The gateway SDK dependencies are the only non-free part; everything Siddharth Pandalai wrote is open.
+Source is fully available and the project is GPL-3.0-or-later, at https://github.com/darkpandawarrior/PaymentsLab-KMP. The gateway SDK dependencies are the only non-free part; everything Siddharth Pandalai wrote is open.
 ```
 
 ## What I could not confirm (verify in the console before relying on it)

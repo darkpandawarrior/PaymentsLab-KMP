@@ -237,7 +237,7 @@ jobs:
           chmod +x ./gradlew
           mkdir -p build dist
           if xcodebuild -project "${{ steps.detect.outputs.project }}" -scheme "${{ steps.scheme.outputs.scheme }}" \
-              -configuration Release -sdk iphoneos -archivePath build/PaymentsLab.xcarchive archive \
+              -configuration Release -sdk iphoneos -archivePath build/PaymentsLab-KMP.xcarchive archive \
               MARKETING_VERSION="${{ steps.version.outputs.marketing }}" \
               CURRENT_PROJECT_VERSION="${{ steps.version.outputs.buildcode }}" \
               CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
@@ -251,7 +251,7 @@ jobs:
         if: steps.detect.outputs.found == 'true' && steps.archive.outputs.archived == 'true'
         run: |
           set -uo pipefail
-          app="$(find build/PaymentsLab.xcarchive/Products/Applications -maxdepth 1 -name '*.app' 2>/dev/null | head -1)"
+          app="$(find build/PaymentsLab-KMP.xcarchive/Products/Applications -maxdepth 1 -name '*.app' 2>/dev/null | head -1)"
           if [ -z "$app" ]; then
             echo "::warning::Archive succeeded but produced no .app bundle under Products/Applications; nothing to package."
             exit 0
