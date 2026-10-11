@@ -50,8 +50,8 @@ jobs:
         if: env.HAS_SECRET == 'true'
         uses: actions/setup-java@v6
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: '25'
+          distribution: 'corretto'
 
       - name: Use CI JDK 21 (strip machine-specific java.home)
         if: env.HAS_SECRET == 'true'

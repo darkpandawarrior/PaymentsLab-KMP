@@ -7,7 +7,7 @@ kotlin {
     // Pin the toolchain to 21 so the JVM target (consumed by the backend server) compiles to Java 21
     // bytecode, matching the backend runtime. Otherwise it defaults higher and the backend test
     // fails with UnsupportedClassVersionError.
-    jvmToolchain(21)
+    jvmToolchain(25)
 
     // JVM target so the backend server links against the exact same DTOs the client sends.
     jvm()
