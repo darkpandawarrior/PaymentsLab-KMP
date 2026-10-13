@@ -46,14 +46,14 @@ jobs:
           submodules: recursive
         if: env.HAS_SECRET == 'true'
 
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         if: env.HAS_SECRET == 'true'
         uses: actions/setup-java@v6
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: '25'
+          distribution: corretto
 
-      - name: Use CI JDK 21 (strip machine-specific java.home)
+      - name: Use CI JDK 25 (strip machine-specific java.home)
         if: env.HAS_SECRET == 'true'
         run: sed -i '/^org\.gradle\.java\.home/d; /^org\.gradle\.java\.installations\.paths/d' gradle.properties
 
