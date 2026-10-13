@@ -25,7 +25,7 @@ detekt {
     allRules = false
 }
 
-tasks.withType<dev.detekt.gradle.Detekt>().configureEach { jvmTarget = "21" }
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach { jvmTarget = "25" }
 
 dependencies {
     // Aggregate coverage from the logic-bearing modules (skip UI-only + generated-heavy ones,
@@ -79,8 +79,8 @@ subprojects {
         // and detekt only reads .kt.
         source.setFrom(layout.projectDirectory.dir("src"))
     }
-    tasks.withType<dev.detekt.gradle.Detekt>().configureEach { jvmTarget = "21" }
-    tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach { jvmTarget = "21" }
+    tasks.withType<dev.detekt.gradle.Detekt>().configureEach { jvmTarget = "25" }
+    tasks.withType<dev.detekt.gradle.DetektCreateBaselineTask>().configureEach { jvmTarget = "25" }
 }
 
 // ── Workflow task aliases: the local dev + CI verification loop ──────────────

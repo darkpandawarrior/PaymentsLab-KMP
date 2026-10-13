@@ -3,8 +3,8 @@ plugins {
 }
 
 kotlin {
-    // Toolchain 21 so the JVM target compiles to Java 21 bytecode (see core:protocol for rationale).
-    jvmToolchain(21)
+    // Toolchain 25 so the JVM target compiles to Java 25 bytecode (see core:protocol for rationale).
+    jvmToolchain(25)
 
     // JVM target so the backend can resolve credentials from System.getenv with the same logic.
     jvm()
