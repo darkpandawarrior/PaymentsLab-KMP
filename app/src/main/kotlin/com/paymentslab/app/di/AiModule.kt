@@ -1,7 +1,9 @@
 package com.paymentslab.app.di
 
 import com.siddharth.kmp.ai.ModelManifestEntry
+import com.siddharth.kmp.ai.mlKitLlmModule
 import com.siddharth.kmp.ai.onDeviceLlmModule
+import com.siddharth.kmp.designsystem.googlePayButtonModule
 import com.siddharth.kmp.llmchat.AiConfig
 import com.siddharth.kmp.llmchat.AiMessage
 import com.siddharth.kmp.llmchat.AiProvider
@@ -25,7 +27,7 @@ import org.koin.dsl.module
  */
 val aiModule =
     module {
-        includes(onDeviceLlmModule())
+        includes(onDeviceLlmModule(), mlKitLlmModule(), googlePayButtonModule())
 
         single { SecureKeyStore(androidContext()) }
 
