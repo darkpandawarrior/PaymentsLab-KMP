@@ -237,6 +237,9 @@ dependencies {
     implementation("com.siddharth.kmp:ai:1.0.0")
     implementation("com.siddharth.kmp:llm-chat:1.0.0")
     implementation("com.siddharth.kmp:result:1.0.0")
+    // Opt-in Google services (toolkit docs/gms-opt-in.md): Gemini Nano tier and the Google Pay button.
+    implementation("com.siddharth.kmp:ai-mlkit:1.0.0")
+    implementation("com.siddharth.kmp:designsystem-wallet-gms:1.0.0")
 
     // Provider SDKs referenced directly by MainActivity's Activity-level callback wiring
     // (providers depend on these via `implementation`, so the types aren't transitive here).

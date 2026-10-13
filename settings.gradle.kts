@@ -86,6 +86,8 @@ includeBuild("external/kmp-toolkit") {
         substitute(module("com.siddharth.kmp:result")).using(project(":result"))
         substitute(module("com.siddharth.kmp:ai")).using(project(":ai"))
         substitute(module("com.siddharth.kmp:ai-testing")).using(project(":ai-testing"))
+        substitute(module("com.siddharth.kmp:ai-mlkit")).using(project(":ai-mlkit"))
+        substitute(module("com.siddharth.kmp:designsystem-wallet-gms")).using(project(":designsystem-wallet-gms"))
         substitute(module("com.siddharth.kmp:llm-chat")).using(project(":llm-chat"))
         substitute(module("com.siddharth.kmp:payments-api")).using(project(":payments-api"))
         substitute(module("com.siddharth.kmp:stripe")).using(project(":provider:stripe"))
