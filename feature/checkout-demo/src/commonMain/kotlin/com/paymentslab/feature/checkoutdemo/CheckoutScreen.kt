@@ -5,9 +5,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,23 +29,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.paymentslab.core.designsystem.DesignTokens
-import com.paymentslab.core.designsystem.FailureShake
 import com.paymentslab.core.designsystem.LabScaffold
 import com.paymentslab.core.designsystem.PrimaryButton
 import com.paymentslab.core.designsystem.SectionHeader
 import com.paymentslab.core.designsystem.ShieldPulse
-import com.paymentslab.core.designsystem.SuccessBurst
 import com.siddharth.kmp.designsystem.StepTimeline
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentHost
-import com.siddharth.kmp.paymentsapi.PaymentStatus
 import kotlinx.collections.immutable.ImmutableList
 
 /**
@@ -63,6 +62,11 @@ fun CheckoutRoot(
         onSelectGateway = viewModel::selectGateway,
         onPay = { viewModel.pay(paymentHost) },
         onBack = onBack,
+        // Retry re-presses Pay: the VM keeps the idempotency key after a failure, so the server dedups.
+        onRetry = { viewModel.pay(paymentHost) },
+        onChangeMethod = viewModel::dismissResult,
+        // Done leaves checkout entirely; popping the route drops this ViewModel, so no stale state.
+        onDone = onBack ?: viewModel::dismissResult,
         modifier = modifier,
     )
 }
@@ -76,8 +80,26 @@ fun CheckoutScreen(
     onPay: () -> Unit,
     onBack: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    onRetry: () -> Unit = {},
+    onChangeMethod: () -> Unit = {},
+    onDone: () -> Unit = {},
 ) {
-    LabScaffold(title = "Checkout Demo", onBack = onBack) { padding ->
+    // The terminal page is shown only when the VM has a server-confirmed result (see CheckoutResult).
+    state.result?.let { result ->
+        CheckoutResultScreen(
+            result = result,
+            onDone = onDone,
+            onRetry = onRetry,
+            onChangeMethod = onChangeMethod,
+            modifier = modifier,
+        )
+        return
+    }
+    LabScaffold(
+        title = "Checkout Demo",
+        onBack = onBack,
+        bottomBar = { PayBar(state = state, onPay = onPay) },
+    ) { padding ->
         Column(
             modifier =
                 modifier
@@ -99,21 +121,24 @@ fun CheckoutScreen(
                 )
             }
 
-            SectionHeader(text = "1 · Pick a product")
-            state.products.forEach { product ->
-                ProductRow(
-                    product = product,
-                    selected = product.catalogItemId == state.selectedProduct?.catalogItemId,
-                    onClick = { onSelectProduct(product) },
+            val inFlight = state.isRunning || state.steps.isNotEmpty()
+            if (!inFlight) {
+                SectionHeader(text = "1 · Pick a product")
+                state.products.forEach { product ->
+                    ProductRow(
+                        product = product,
+                        selected = product.catalogItemId == state.selectedProduct?.catalogItemId,
+                        onClick = { onSelectProduct(product) },
+                    )
+                }
+
+                SectionHeader(text = "2 · Pick a gateway")
+                GatewayChips(
+                    gateways = state.gateways,
+                    selected = state.selectedGatewayId,
+                    onSelect = onSelectGateway,
                 )
             }
-
-            SectionHeader(text = "2 · Pick a gateway")
-            GatewayChips(
-                gateways = state.gateways,
-                selected = state.selectedGatewayId,
-                onSelect = onSelectGateway,
-            )
 
             state.selectedProduct?.let { product ->
                 SectionHeader(text = "Order summary")
@@ -124,21 +149,48 @@ fun CheckoutScreen(
                 )
             }
 
+            if (inFlight) {
+                SectionHeader(text = "What's happening")
+                StepTimeline(steps = state.steps, modifier = Modifier.fillMaxWidth())
+            }
+        }
+    }
+}
+
+/**
+ * The Pay action, pinned under the scrolling content. It pads for the navigation bar and the IME
+ * itself (the scaffold's bottomBar slot does not), and shows the formatted total so the amount is
+ * visible without scrolling back to the summary.
+ */
+@Composable
+internal fun PayBar(
+    state: CheckoutUiState,
+    onPay: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        tonalElevation = DesignTokens.Elevation.raised,
+    ) {
+        Column(
+            modifier =
+                Modifier
+                    .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
+                    .padding(horizontal = DesignTokens.Spacing.lg, vertical = DesignTokens.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
+        ) {
             PrimaryButton(
-                text = if (state.isRunning) "Paying…" else "Pay",
+                text =
+                    when {
+                        state.isRunning -> "Paying…"
+                        state.selectedProduct != null -> "Pay ${state.selectedProduct.priceLabel}"
+                        else -> "Pay"
+                    },
                 onClick = onPay,
                 enabled = state.canPay,
                 modifier = Modifier.fillMaxWidth(),
             )
-
-            if (state.steps.isNotEmpty()) {
-                SectionHeader(text = "What's happening")
-                StepTimeline(steps = state.steps, modifier = Modifier.fillMaxWidth())
-            }
-
-            state.finalStatus?.let { status ->
-                OutcomeSummary(status = status)
-            }
         }
     }
 }
@@ -278,53 +330,5 @@ private fun SummaryLine(
             style = if (emphasise) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium,
             fontWeight = if (emphasise) FontWeight.Bold else FontWeight.Normal,
         )
-    }
-}
-
-@Composable
-private fun OutcomeSummary(
-    status: PaymentStatus,
-    modifier: Modifier = Modifier,
-) {
-    val ok = status == PaymentStatus.SUCCESS || status == PaymentStatus.REFUNDED
-    val title = if (ok) "Payment successful" else "Payment not completed"
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = if (ok) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
-        shape = RoundedCornerShape(DesignTokens.Radius.md),
-    ) {
-        Column(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(DesignTokens.Spacing.lg)
-                    // Assertive live region: TalkBack announces the outcome the moment it lands.
-                    .semantics { liveRegion = LiveRegionMode.Assertive },
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
-        ) {
-            if (ok) SuccessBurst() else FailureShake()
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color =
-                    if (ok) {
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.onErrorContainer
-                    },
-            )
-            Text(
-                text = "Server-authoritative status: ${status.name}",
-                style = MaterialTheme.typography.bodyMedium,
-                color =
-                    if (ok) {
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.onErrorContainer
-                    },
-            )
-        }
     }
 }
