@@ -2,14 +2,18 @@ package com.paymentslab.app
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import com.cashfree.pg.api.CFPaymentGatewayService
 import com.cashfree.pg.core.api.callback.CFCheckoutResponseCallback
 import com.cashfree.pg.core.api.utils.CFErrorResponse
+import com.paymentslab.core.designsystem.LocalReducedMotion
 import com.paymentslab.core.designsystem.PaymentsLabTheme
 import com.razorpay.PaymentData
 import com.razorpay.PaymentResultWithDataListener
@@ -78,7 +82,15 @@ class MainActivity :
                 }
                 DisposableEffect(Unit) { onDispose { stripeHost.detach() } }
 
-                AppNavHost(paymentHost = host)
+                // "Remove animations" (animator scale 0) is the platform reduce-motion signal. Read
+                // once per composition root; a change mid-session applies on the next launch.
+                val reducedMotion =
+                    remember {
+                        Settings.Global.getFloat(contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
+                    }
+                CompositionLocalProvider(LocalReducedMotion provides reducedMotion) {
+                    AppNavHost(paymentHost = host)
+                }
             }
         }
     }

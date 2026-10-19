@@ -14,17 +14,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.paymentslab.core.designsystem.DesignTokens
 import com.paymentslab.core.designsystem.LabScaffold
+import com.paymentslab.core.designsystem.StatusPill
+import com.paymentslab.core.designsystem.StatusTone
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -121,7 +121,7 @@ private fun HistoryCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
-                StatusChip(status = row.status)
+                StatusPill(label = row.status.name, tone = statusTone(row.status))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -139,31 +139,6 @@ private fun HistoryCard(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun StatusChip(
-    status: PaymentStatus,
-    modifier: Modifier = Modifier,
-) {
-    val color = statusTone(status)
-    Surface(
-        modifier = modifier,
-        color = color.copy(alpha = 0.14f),
-        shape = MaterialTheme.shapes.small,
-    ) {
-        Text(
-            text = status.name,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = color,
-            modifier =
-                Modifier.padding(
-                    horizontal = DesignTokens.Spacing.md,
-                    vertical = DesignTokens.Spacing.xs,
-                ),
-        )
     }
 }
 
@@ -189,15 +164,11 @@ private fun EmptyState(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Semantic tone per status, drawn from the active theme rather than the design system's internal
- * [com.paymentslab.core.designsystem] palette (which is not part of the public API).
- */
-@Composable
-private fun statusTone(status: PaymentStatus): Color =
+/** Maps a payment status to the design system's shared [StatusTone]; no colour lives here. */
+private fun statusTone(status: PaymentStatus): StatusTone =
     when (status) {
-        PaymentStatus.SUCCESS, PaymentStatus.REFUNDED -> Color(0xFF1E9E6A)
-        PaymentStatus.FAILED, PaymentStatus.CANCELLED -> MaterialTheme.colorScheme.error
-        PaymentStatus.PENDING -> Color(0xFFB57900)
-        PaymentStatus.CREATED -> MaterialTheme.colorScheme.onSurfaceVariant
+        PaymentStatus.SUCCESS, PaymentStatus.REFUNDED -> StatusTone.Success
+        PaymentStatus.FAILED, PaymentStatus.CANCELLED -> StatusTone.Danger
+        PaymentStatus.PENDING -> StatusTone.Warning
+        PaymentStatus.CREATED -> StatusTone.Neutral
     }

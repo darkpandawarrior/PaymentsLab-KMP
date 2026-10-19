@@ -10,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import com.siddharth.kmp.common.minorToDecimalString
 
 /**
  * Counts up from zero to [amountMinor] on first composition (and again if the amount changes) — the
@@ -37,20 +36,4 @@ fun AnimatedAmount(
         }
     }
     Text(text = formatMoney(animated.value.toLong(), currency), style = style, modifier = modifier)
-}
-
-/** Minor-units → a human amount string. Currency-code fallback keeps this correct for every ISO code. */
-internal fun formatMoney(
-    amountMinor: Long,
-    currency: String,
-): String {
-    val symbol =
-        when (currency) {
-            "INR" -> "₹"
-            "USD" -> "$"
-            "EUR" -> "€"
-            "GBP" -> "£"
-            else -> "$currency "
-        }
-    return "$symbol${amountMinor.minorToDecimalString()}"
 }

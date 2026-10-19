@@ -1,6 +1,7 @@
 package com.paymentslab.feature.lab
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -32,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -99,15 +102,6 @@ fun LabHomeScreen(
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
             item {
-                SectionHeader(text = "Coverage")
-                RegionCoverageMap(
-                    regions = state.regionCounts,
-                    selectedRegions = state.selectedRegions,
-                    onToggleRegion = onToggleRegionFilter,
-                    modifier = Modifier.padding(bottom = DesignTokens.Spacing.md),
-                )
-            }
-            item {
                 OutlinedTextField(
                     value = state.searchQuery,
                     onValueChange = onSearchQueryChange,
@@ -132,6 +126,15 @@ fun LabHomeScreen(
                         TextButton(onClick = onClearFilters) { Text("Clear") }
                     }
                 }
+            }
+            item {
+                SectionHeader(text = "Coverage")
+                RegionCoverageMap(
+                    regions = state.regionCounts,
+                    selectedRegions = state.selectedRegions,
+                    onToggleRegion = onToggleRegionFilter,
+                    modifier = Modifier.padding(bottom = DesignTokens.Spacing.md),
+                )
             }
             if (state.sections.isEmpty()) {
                 item {
@@ -187,8 +190,9 @@ private fun StatusFilterChips(
     onToggle: (GatewayStatusUi) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    FlowRow(
-        modifier = modifier,
+    // One horizontally scrolling row (was a wrapping FlowRow that took two lines above the list).
+    Row(
+        modifier = modifier.horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
         GatewayStatusUi.entries.forEach { status ->
@@ -219,7 +223,7 @@ private fun ProviderCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick),
+                .clickable(role = Role.Button, onClick = onClick),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = DesignTokens.Elevation.card),
     ) {
         Column(

@@ -38,6 +38,9 @@ logback = "1.6.3"
 
 # Payment provider SDKs (Android-only, live in provider:* androidMain)
 razorpay = "1.6.41"
+# checkout's POM declares core/standard-core as LATEST, so pin them for reproducible builds
+razorpay-core = "1.0.19"
+razorpay-standard-core = "1.7.19"
 cashfree = "2.6.0"
 stripe = "23.19.0"
 play-services-wallet = "20.0.0"
@@ -145,6 +148,8 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 
 # Payment provider SDKs
 razorpay-checkout = { module = "com.razorpay:checkout", version.ref = "razorpay" }
+razorpay-core = { module = "com.razorpay:core", version.ref = "razorpay-core" }
+razorpay-standard-core = { module = "com.razorpay:standard-core", version.ref = "razorpay-standard-core" }
 cashfree-pg-api = { module = "com.cashfree.pg:api", version.ref = "cashfree" }
 cashfree-pg-ui = { module = "com.cashfree.pg:ui", version.ref = "cashfree" }
 stripe-paymentsheet = { module = "com.stripe:paymentsheet", version.ref = "stripe" }

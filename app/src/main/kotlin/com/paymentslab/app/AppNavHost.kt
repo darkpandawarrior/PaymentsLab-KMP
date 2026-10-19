@@ -28,6 +28,7 @@ import com.paymentslab.core.designsystem.AppShell
 import com.paymentslab.core.designsystem.AppShellDestination
 import com.paymentslab.core.designsystem.DesignTokens
 import com.paymentslab.feature.checkoutdemo.CheckoutRoot
+import com.paymentslab.feature.checkoutdemo.demoPriceLabel
 import com.paymentslab.feature.history.HistoryRoot
 import com.paymentslab.feature.home.HomeRoot
 import com.paymentslab.feature.lab.LabHomeRoot
@@ -83,7 +84,9 @@ fun AppNavHost(paymentHost: PaymentHost) {
                     restoreState = true
                 }
             },
-            onFabClick = { navController.navigate("checkout") },
+            onFabClick = { navController.navigate("checkout") { launchSingleTop = true } },
+            // Checkout is a full-screen, chrome-free flow: no bottom bar, no second Pay FAB over Pay.
+            showChrome = currentDestination?.route != "checkout",
         ) { padding ->
             NavHost(
                 navController = navController,
@@ -172,7 +175,7 @@ private fun NavGraphBuilder.paymentsLabGraph(
                 paymentHost = paymentHost,
                 gatewayId = GatewayId(id),
                 providerName = meta?.displayName ?: id,
-                priceLabel = "₹499",
+                priceLabel = demoPriceLabel("book_499"),
                 catalogItemId = "book_499",
                 onBack = { navController.popBackStack() },
             )
