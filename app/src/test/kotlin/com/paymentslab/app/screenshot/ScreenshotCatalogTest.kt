@@ -21,7 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -41,6 +43,9 @@ import com.paymentslab.core.designsystem.SectionHeader
 import com.paymentslab.core.designsystem.ShieldPulse
 import com.paymentslab.core.designsystem.SuccessBurst
 import com.paymentslab.feature.checkoutdemo.CheckoutGateway
+import com.paymentslab.feature.checkoutdemo.CheckoutOutcome
+import com.paymentslab.feature.checkoutdemo.CheckoutResult
+import com.paymentslab.feature.checkoutdemo.CheckoutResultScreen
 import com.paymentslab.feature.checkoutdemo.CheckoutScreen
 import com.paymentslab.feature.checkoutdemo.CheckoutUiState
 import com.paymentslab.feature.checkoutdemo.DEMO_PRODUCTS
@@ -113,6 +118,7 @@ class ScreenshotCatalogTest {
     private fun snapshotScreen(
         name: String,
         reducedMotion: Boolean = false,
+        beforeCapture: () -> Unit = {},
         content: @Composable () -> Unit,
     ) {
         compose.setContent {
@@ -122,6 +128,7 @@ class ScreenshotCatalogTest {
                 }
             }
         }
+        beforeCapture()
         compose.onRoot().captureRoboImage("../docs/screenshots/$name.png")
     }
 
@@ -452,25 +459,21 @@ class ScreenshotCatalogTest {
     // ── CheckoutScreen (redesign) — a selected product/gateway, floating-elevation selection ───
     @Test
     fun checkoutScreen_orderSummary() =
-        snapshotScreen("checkout_screen_order_summary") {
+        // The picker fills the first viewport; scroll the real screen to the summary card so the
+        // frame shows the state it is named for (it used to capture the product picker only).
+        snapshotScreen(
+            "checkout_screen_order_summary",
+            reducedMotion = true,
+            beforeCapture = { compose.onNodeWithText("Order summary").performScrollTo() },
+        ) {
             CheckoutScreen(
-                state =
-                    CheckoutUiState(
-                        gateways =
-                            persistentListOf(
-                                CheckoutGateway(GatewayId("razorpay"), "Razorpay"),
-                                CheckoutGateway(GatewayId("upi_intent"), "UPI Intent"),
-                            ),
-                        selectedProduct = DEMO_PRODUCTS.first { it.catalogItemId == "book_499" },
-                        selectedGatewayId = GatewayId("razorpay"),
-                    ),
+                state = checkoutStateBase(),
                 onSelectProduct = {},
                 onSelectGateway = {},
                 onPay = {},
             )
         }
 
-    // ── Checkout flow frames (paying → settled) — same screen, later states, for the flow GIF ────
     private fun checkoutStateBase() =
         CheckoutUiState(
             gateways =
@@ -486,6 +489,46 @@ class ScreenshotCatalogTest {
         sampleTimeline()
             .map { it.copy(state = StepState.DONE) }
             .toImmutableList()
+
+    private fun successResult() =
+        CheckoutResult(
+            outcome = CheckoutOutcome.SUCCESS,
+            amountLabel = "₹499.00",
+            gatewayName = "Razorpay",
+            orderId = "order_9f3c",
+            paymentId = "pay_Qx81aK2",
+            reason = null,
+            completedAtMs = 1_760_000_000_000L,
+        )
+
+    private fun failureResult() =
+        successResult().copy(
+            outcome = CheckoutOutcome.FAILURE,
+            paymentId = null,
+            reason = "Your bank declined the payment.",
+        )
+
+    @Test
+    fun resultScreen_success() =
+        snapshotScreen("result_screen_success", reducedMotion = true) {
+            CheckoutResultScreen(
+                result = successResult(),
+                onDone = {},
+                onRetry = {},
+                onChangeMethod = {},
+            )
+        }
+
+    @Test
+    fun resultScreen_failure() =
+        snapshotScreen("result_screen_failure", reducedMotion = true) {
+            CheckoutResultScreen(
+                result = failureResult(),
+                onDone = {},
+                onRetry = {},
+                onChangeMethod = {},
+            )
+        }
 
     @Test
     fun checkoutScreen_paying() =
@@ -507,6 +550,7 @@ class ScreenshotCatalogTest {
                         steps = doneTimeline(),
                         isRunning = false,
                         finalStatus = PaymentStatus.SUCCESS,
+                        result = successResult(),
                     ),
                 onSelectProduct = {},
                 onSelectGateway = {},
