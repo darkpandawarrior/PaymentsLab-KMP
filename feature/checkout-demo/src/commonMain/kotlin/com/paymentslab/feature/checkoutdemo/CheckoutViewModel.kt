@@ -9,9 +9,11 @@ import com.paymentslab.core.designsystem.OrderCreatedCopy
 import com.paymentslab.core.designsystem.SettledCopy
 import com.paymentslab.core.designsystem.TimelineCopy
 import com.paymentslab.core.designsystem.VerifyingCopy
+import com.paymentslab.core.designsystem.format
 import com.paymentslab.core.designsystem.toTimelineStep
 import com.paymentslab.core.orchestration.PaymentFlowRunner
 import com.siddharth.kmp.common.AppLog
+import com.siddharth.kmp.common.UiText
 import com.siddharth.kmp.designsystem.StepState
 import com.siddharth.kmp.designsystem.TimelineStep
 import com.siddharth.kmp.mvi.StateViewModel
@@ -19,6 +21,7 @@ import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.GatewayStatus
 import com.siddharth.kmp.paymentsapi.PaymentGatewayRegistry
 import com.siddharth.kmp.paymentsapi.PaymentHost
+import com.siddharth.kmp.paymentsapi.PaymentResult
 import com.siddharth.kmp.paymentsapi.PaymentStatus
 import com.siddharth.kmp.paymentsapi.PaymentStep
 import kotlinx.collections.immutable.ImmutableList
@@ -27,6 +30,8 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -75,6 +80,27 @@ data class CheckoutGateway(
     val displayName: String,
 )
 
+/** How a finished checkout run ended, decided only from the server-confirmed state (see [CheckoutResult]). */
+enum class CheckoutOutcome { SUCCESS, FAILURE, PENDING_VERIFICATION }
+
+/**
+ * The terminal result the full-screen result page renders. It exists only once the run has a
+ * server-side answer ([PaymentStep.Settled]) or has provably failed; a client SDK "success" alone
+ * never produces [CheckoutOutcome.SUCCESS]. If the SDK reported success or pending but the server
+ * could not be reached, the outcome is [CheckoutOutcome.PENDING_VERIFICATION]: the money may have
+ * moved, so we must not claim failure either.
+ */
+@Immutable
+data class CheckoutResult(
+    val outcome: CheckoutOutcome,
+    val amountLabel: String,
+    val gatewayName: String,
+    val orderId: String?,
+    val paymentId: String?,
+    val reason: String?,
+    val completedAtMs: Long,
+)
+
 /** State for [CheckoutScreen]: the selected product + gateway, the live mini-timeline, the outcome. */
 @Immutable
 data class CheckoutUiState(
@@ -85,6 +111,8 @@ data class CheckoutUiState(
     val steps: ImmutableList<TimelineStep> = persistentListOf(),
     val isRunning: Boolean = false,
     val finalStatus: PaymentStatus? = null,
+    /** Non-null only after server-side confirmation; drives the full-screen result page. */
+    val result: CheckoutResult? = null,
     /**
      * Idempotency key for the current order attempt. Stable across re-presses of Pay (so a retry
      * after an ambiguous failure dedups server-side); reset to null on success or a changed
@@ -129,6 +157,12 @@ class CheckoutViewModel(
         setState { copy(selectedGatewayId = gatewayId, idempotencyKey = null) }
     }
 
+    /** Leaves the result page for the picker with the selection intact (Change method, Done, Retry). */
+    fun dismissResult() {
+        if (currentState.isRunning) return
+        setState { copy(result = null, steps = persistentListOf(), finalStatus = null) }
+    }
+
     // The UI boundary: anything escaping here cancels the viewModelScope and the screen freezes
     // mid-run, so the catch is total by design. The flow reaches into gateway SDKs whose throw
     // surface this module does not own. CancellationException is rethrown first.
@@ -148,6 +182,7 @@ class CheckoutViewModel(
                 isRunning = true,
                 steps = persistentListOf(),
                 finalStatus = null,
+                result = null,
                 idempotencyKey = idempotencyKey,
             )
         }
@@ -159,12 +194,14 @@ class CheckoutViewModel(
                     accumulated += step
                     setState { copy(steps = accumulated.toTimeline(runInFlight = true)) }
                 }
+                val result = accumulated.toResult(current)
                 val terminal = accumulated.terminalStatus()
                 setState {
                     copy(
                         steps = accumulated.toTimeline(runInFlight = false),
                         isRunning = false,
                         finalStatus = terminal,
+                        result = result,
                         // Success = a genuinely new order next time; clear the key. A failure keeps it
                         // so re-pressing Pay retries the SAME order attempt (server dedups).
                         idempotencyKey = if (terminal == PaymentStatus.SUCCESS) null else idempotencyKey,
@@ -177,7 +214,8 @@ class CheckoutViewModel(
                 // UI with the spinner off, a half-drawn timeline and no failure anywhere on screen,
                 // and the cause never reached a log. Report it as a terminal failure and log the cause.
                 AppLog.e("Checkout run failed for gateway=${current.selectedGatewayId?.value}", t, tag = Tag)
-                setState { copy(isRunning = false, finalStatus = PaymentStatus.FAILED) }
+                val result = accumulated.toResult(current)
+                setState { copy(isRunning = false, finalStatus = result.outcome.toStatus(), result = result) }
             }
         }
     }
@@ -197,9 +235,75 @@ class CheckoutViewModel(
     private fun List<PaymentStep>.terminalStatus(): PaymentStatus? =
         when (val last = lastOrNull()) {
             is PaymentStep.Settled -> last.status
-            is PaymentStep.Errored -> PaymentStatus.FAILED
+            is PaymentStep.Errored -> if (sdkMayHaveCharged()) PaymentStatus.PENDING else PaymentStatus.FAILED
             else -> null
         }
+
+    /** The SDK said success or pending: the customer may have been charged even if the server is unreachable. */
+    private fun List<PaymentStep>.sdkMayHaveCharged(): Boolean =
+        filterIsInstance<PaymentStep.ClientResult>().any {
+            it.result is PaymentResult.Success || it.result is PaymentResult.Pending
+        }
+
+    private fun CheckoutOutcome.toStatus(): PaymentStatus =
+        when (this) {
+            CheckoutOutcome.SUCCESS -> PaymentStatus.SUCCESS
+            CheckoutOutcome.FAILURE -> PaymentStatus.FAILED
+            CheckoutOutcome.PENDING_VERIFICATION -> PaymentStatus.PENDING
+        }
+
+    /**
+     * Folds the run into the terminal [CheckoutResult]. Server-confirmation gating lives here: only a
+     * [PaymentStep.Settled] with SUCCESS/REFUNDED yields SUCCESS; a run that ended without a Settled
+     * (error, crash, stream ended early) is FAILURE only if the SDK never claimed a charge.
+     */
+    private fun List<PaymentStep>.toResult(from: CheckoutUiState): CheckoutResult {
+        val settled = lastOrNull() as? PaymentStep.Settled
+        val order = filterIsInstance<PaymentStep.OrderCreated>().lastOrNull()
+        val clientFailure = filterIsInstance<PaymentStep.ClientResult>().lastOrNull()?.result
+        val errored = lastOrNull() as? PaymentStep.Errored
+        val chargeUncertain = settled == null && sdkMayHaveCharged()
+
+        val (outcome, reason) =
+            when {
+                settled != null ->
+                    when (settled.status) {
+                        PaymentStatus.SUCCESS, PaymentStatus.REFUNDED -> CheckoutOutcome.SUCCESS to null
+                        PaymentStatus.PENDING, PaymentStatus.CREATED ->
+                            CheckoutOutcome.PENDING_VERIFICATION to "The server has not confirmed this payment yet."
+                        PaymentStatus.CANCELLED -> CheckoutOutcome.FAILURE to "You cancelled the payment."
+                        PaymentStatus.FAILED -> CheckoutOutcome.FAILURE to failureReason(clientFailure, null)
+                    }
+                chargeUncertain ->
+                    CheckoutOutcome.PENDING_VERIFICATION to
+                        "The payment sheet reported a result, but we could not confirm it with the server."
+                else -> CheckoutOutcome.FAILURE to failureReason(clientFailure, errored?.message)
+            }
+
+        val gatewayName = from.gateways.firstOrNull { it.id == from.selectedGatewayId }?.displayName ?: "—"
+        return CheckoutResult(
+            outcome = outcome,
+            amountLabel = order?.amount?.format() ?: from.selectedProduct?.priceLabel.orEmpty(),
+            gatewayName = gatewayName,
+            orderId = settled?.snapshot?.orderId ?: order?.orderId,
+            paymentId = settled?.snapshot?.paymentId,
+            reason = reason,
+            completedAtMs = systemNowMs(),
+        )
+    }
+
+    private fun failureReason(
+        clientResult: PaymentResult?,
+        erroredMessage: UiText?,
+    ): String =
+        when {
+            clientResult is PaymentResult.Failure -> clientResult.message.asText() ?: "The payment was declined."
+            clientResult is PaymentResult.Cancelled -> "You cancelled the payment."
+            erroredMessage != null -> erroredMessage.asText() ?: "The checkout could not complete."
+            else -> "The checkout could not complete."
+        }
+
+    private fun UiText.asText(): String? = (this as? UiText.Dynamic)?.value
 
     private companion object {
         const val TAG = "CheckoutViewModel"
@@ -207,3 +311,6 @@ class CheckoutViewModel(
 }
 
 private const val Tag = "CheckoutViewModel"
+
+@OptIn(ExperimentalTime::class)
+private fun systemNowMs(): Long = Clock.System.now().toEpochMilliseconds()

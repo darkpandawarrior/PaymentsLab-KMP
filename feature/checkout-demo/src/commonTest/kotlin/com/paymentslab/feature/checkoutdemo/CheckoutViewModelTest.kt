@@ -1,5 +1,6 @@
 package com.paymentslab.feature.checkoutdemo
 
+import com.paymentslab.core.designsystem.format
 import com.siddharth.kmp.common.UiText
 import com.siddharth.kmp.designsystem.StepState
 import com.siddharth.kmp.paymentsapi.GatewayId
@@ -171,4 +172,153 @@ class CheckoutViewModelTest {
             assertEquals(0, vm.uiState.value.steps.size)
             assertEquals(null, runner.lastCatalogItemId)
         }
+
+    // ── server-confirmation gating: the result page only ever reflects server-side state ─────────
+    private fun selected(runner: FakePaymentFlowRunner): CheckoutViewModel {
+        val vm = CheckoutViewModel(runner, sandboxAndGatedRegistry())
+        vm.selectProduct(
+            vm.uiState.value.products
+                .first { it.catalogItemId == "book_499" },
+        )
+        vm.selectGateway(GatewayId("razorpay"))
+        return vm
+    }
+
+    private fun CheckoutViewModel.outcome(): CheckoutOutcome? = uiState.value.result?.outcome
+
+    private val clientSuccess =
+        PaymentStep.ClientResult(
+            result = PaymentResult.Success("pay_1", emptyMap(), RedactedPayload.EMPTY),
+            payload = RedactedPayload.EMPTY,
+        )
+
+    private val orderCreated =
+        PaymentStep.OrderCreated("order_1", Money.inr(499), RedactedPayload.EMPTY)
+
+    @Test
+    fun serverSettledSuccess_producesSuccessResultWithReceiptFields() =
+        runTest {
+            val vm = selected(FakePaymentFlowRunner(successScript()))
+
+            vm.pay(TestHost)
+
+            val result = vm.uiState.value.result
+            assertEquals(CheckoutOutcome.SUCCESS, result?.outcome)
+            assertEquals("order_1", result?.orderId)
+            assertEquals("pay_1", result?.paymentId)
+            assertEquals("Razorpay", result?.gatewayName)
+            assertEquals(Money.inr(499).format(), result?.amountLabel)
+            assertTrue((result?.completedAtMs ?: 0L) > 0L)
+        }
+
+    @Test
+    fun clientSuccessWithoutServerSettlement_isPendingVerificationNotSuccess() =
+        runTest {
+            // SDK said success, the server round-trip then broke: money may have moved.
+            val script =
+                listOf(orderCreated, clientSuccess, PaymentStep.Verifying(), PaymentStep.Errored(UiText.of("timeout")))
+            val vm = selected(FakePaymentFlowRunner(script))
+
+            vm.pay(TestHost)
+
+            assertEquals(CheckoutOutcome.PENDING_VERIFICATION, vm.outcome())
+            assertEquals(PaymentStatus.PENDING, vm.uiState.value.finalStatus)
+        }
+
+    @Test
+    fun streamEndingBeforeSettled_afterClientSuccess_isPendingVerification() =
+        runTest {
+            val vm = selected(FakePaymentFlowRunner(listOf(orderCreated, clientSuccess, PaymentStep.Verifying())))
+
+            vm.pay(TestHost)
+
+            assertEquals(CheckoutOutcome.PENDING_VERIFICATION, vm.outcome())
+        }
+
+    @Test
+    fun serverSettledPending_isPendingVerification() =
+        runTest {
+            val script =
+                listOf(
+                    orderCreated,
+                    clientSuccess,
+                    PaymentStep.Settled(
+                        PaymentStatus.PENDING,
+                        PaymentSnapshot("order_1", "pay_1", PaymentStatus.PENDING),
+                        RedactedPayload.EMPTY,
+                    ),
+                )
+            val vm = selected(FakePaymentFlowRunner(script))
+
+            vm.pay(TestHost)
+
+            assertEquals(CheckoutOutcome.PENDING_VERIFICATION, vm.outcome())
+        }
+
+    @Test
+    fun erroredWithoutAnyClientCharge_isFailureWithReason() =
+        runTest {
+            val vm = selected(FakePaymentFlowRunner(failScript()))
+
+            vm.pay(TestHost)
+
+            val result = vm.uiState.value.result
+            assertEquals(CheckoutOutcome.FAILURE, result?.outcome)
+            assertEquals("boom", result?.reason)
+            assertEquals(PaymentStatus.FAILED, vm.uiState.value.finalStatus)
+        }
+
+    @Test
+    fun serverSettledFailed_isFailure() =
+        runTest {
+            val script =
+                listOf(
+                    orderCreated,
+                    PaymentStep.Settled(
+                        PaymentStatus.FAILED,
+                        PaymentSnapshot("order_1", null, PaymentStatus.FAILED),
+                        RedactedPayload.EMPTY,
+                    ),
+                )
+            val vm = selected(FakePaymentFlowRunner(script))
+
+            vm.pay(TestHost)
+
+            assertEquals(CheckoutOutcome.FAILURE, vm.outcome())
+        }
+
+    @Test
+    fun noResultBeforeAnyRun_andRetryAfterFailureReplacesIt() =
+        runTest {
+            val runner = FakePaymentFlowRunner { i -> if (i == 0) failScript() else successScript() }
+            val vm = selected(runner)
+            assertEquals(null, vm.uiState.value.result)
+
+            vm.pay(TestHost)
+            assertEquals(CheckoutOutcome.FAILURE, vm.outcome())
+
+            vm.pay(TestHost)
+            assertEquals(CheckoutOutcome.SUCCESS, vm.outcome())
+        }
+
+    @Test
+    fun dismissResult_clearsResultButKeepsSelection() =
+        runTest {
+            val vm = selected(FakePaymentFlowRunner(failScript()))
+            vm.pay(TestHost)
+
+            vm.dismissResult()
+
+            val state = vm.uiState.value
+            assertEquals(null, state.result)
+            assertTrue(state.steps.isEmpty())
+            assertEquals("book_499", state.selectedProduct?.catalogItemId)
+            assertEquals(GatewayId("razorpay"), state.selectedGatewayId)
+        }
+
+    @Test
+    fun formatUtc_rendersEpochAsUtcMinutes() {
+        assertEquals("1970-01-01 00:00", formatUtc(0L))
+        assertEquals("2025-10-09 08:53", formatUtc(1_760_000_000_000L))
+    }
 }
