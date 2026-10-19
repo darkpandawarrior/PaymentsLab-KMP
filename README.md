@@ -319,7 +319,7 @@ real model on a real device, only against fakes in `commonTest`.
 `ios/shared` packages the full 5-screen app, Home, Explore, provider lab, Checkout, Activity, the
 same shared bottom-bar-plus-FAB chrome as Android, into a real `.framework`, consumed by a genuine
 Xcode project at `ios/iosApp/`. Navigation is a plain `remember`-backed state machine instead of
-Android's `NavController` (Navigation3 is Android-only), but the screen set is identical. The
+Android's `NavController`, but the screen set is identical. The
 screenshot below is a real iOS Simulator run of the same Compose UI, not a mockup:
 
 <div align="center">
