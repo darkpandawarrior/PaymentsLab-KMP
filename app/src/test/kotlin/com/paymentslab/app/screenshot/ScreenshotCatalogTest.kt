@@ -464,7 +464,7 @@ class ScreenshotCatalogTest {
         snapshotScreen(
             "checkout_screen_order_summary",
             reducedMotion = true,
-            beforeCapture = { compose.onNodeWithText("Order summary").performScrollTo() },
+            beforeCapture = { compose.onNodeWithText("Total").performScrollTo() },
         ) {
             CheckoutScreen(
                 state = checkoutStateBase(),
