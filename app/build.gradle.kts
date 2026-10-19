@@ -244,6 +244,10 @@ dependencies {
     // Provider SDKs referenced directly by MainActivity's Activity-level callback wiring
     // (providers depend on these via `implementation`, so the types aren't transitive here).
     implementation(libs.razorpay.checkout)
+    constraints {
+        implementation(libs.razorpay.core) { version { strictly(libs.versions.razorpay.core.get()) } }
+        implementation(libs.razorpay.standard.core) { version { strictly(libs.versions.razorpay.standard.core.get()) } }
+    }
     implementation(libs.stripe.paymentsheet)
     implementation(libs.cashfree.pg.api)
     implementation(libs.cashfree.pg.ui)
