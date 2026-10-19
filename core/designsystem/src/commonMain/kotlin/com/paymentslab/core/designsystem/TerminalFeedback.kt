@@ -20,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 
 /** A settled-success check mark: scales in from nothing, the terminal beat of the payment timeline. */
@@ -30,7 +32,9 @@ fun SuccessBurst(
 ) {
     val scale = remember { Animatable(0f) }
     val reducedMotion = LocalReducedMotion.current
+    val haptics = LocalHapticFeedback.current
     LaunchedEffect(Unit) {
+        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
         if (reducedMotion) {
             scale.snapTo(1f)
         } else {
@@ -58,7 +62,9 @@ fun FailureShake(
 ) {
     val offsetX = remember { Animatable(0f) }
     val reducedMotion = LocalReducedMotion.current
+    val haptics = LocalHapticFeedback.current
     LaunchedEffect(Unit) {
+        haptics.performHapticFeedback(HapticFeedbackType.Reject)
         if (!reducedMotion) {
             repeat(3) {
                 offsetX.animateTo(ShakeAmplitudeDp, tween(ShakeStepMs))

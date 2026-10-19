@@ -1,7 +1,6 @@
 package com.paymentslab.feature.checkoutdemo
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
@@ -22,13 +22,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.paymentslab.core.designsystem.DesignTokens
+import com.paymentslab.core.designsystem.FailureShake
 import com.paymentslab.core.designsystem.LabScaffold
 import com.paymentslab.core.designsystem.PrimaryButton
 import com.paymentslab.core.designsystem.SectionHeader
 import com.paymentslab.core.designsystem.ShieldPulse
+import com.paymentslab.core.designsystem.SuccessBurst
 import com.siddharth.kmp.designsystem.StepTimeline
 import com.siddharth.kmp.paymentsapi.GatewayId
 import com.siddharth.kmp.paymentsapi.PaymentHost
@@ -146,7 +154,7 @@ private fun ProductRow(
         modifier =
             modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick),
+                .selectable(selected = selected, role = Role.RadioButton, onClick = onClick),
         elevation =
             CardDefaults.elevatedCardElevation(
                 defaultElevation = if (selected) DesignTokens.Elevation.floating else DesignTokens.Elevation.raised,
@@ -187,6 +195,7 @@ private fun GatewayChips(
     onSelect: (GatewayId) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val haptics = LocalHapticFeedback.current
     FlowRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
@@ -204,7 +213,10 @@ private fun GatewayChips(
                             width = DesignTokens.Spacing.xs / 4,
                             color = MaterialTheme.colorScheme.outlineVariant,
                             shape = RoundedCornerShape(DesignTokens.Radius.md),
-                        ).clickable { onSelect(gateway.id) },
+                        ).selectable(selected = isSelected, role = Role.RadioButton) {
+                            haptics.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                            onSelect(gateway.id)
+                        },
             ) {
                 Text(
                     text = gateway.displayName,
@@ -285,9 +297,13 @@ private fun OutcomeSummary(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(DesignTokens.Spacing.lg),
+                    .padding(DesignTokens.Spacing.lg)
+                    // Assertive live region: TalkBack announces the outcome the moment it lands.
+                    .semantics { liveRegion = LiveRegionMode.Assertive },
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs),
         ) {
+            if (ok) SuccessBurst() else FailureShake()
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
