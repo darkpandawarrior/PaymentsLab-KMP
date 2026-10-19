@@ -17,6 +17,7 @@ import com.paymentslab.core.designsystem.AppShell
 import com.paymentslab.core.designsystem.AppShellDestination
 import com.paymentslab.core.designsystem.PaymentsLabTheme
 import com.paymentslab.feature.checkoutdemo.CheckoutRoot
+import com.paymentslab.feature.checkoutdemo.demoPriceLabel
 import com.paymentslab.feature.history.HistoryRoot
 import com.paymentslab.feature.home.HomeRoot
 import com.paymentslab.feature.lab.LabHomeRoot
@@ -104,7 +105,7 @@ fun AppRoot() {
                             paymentHost = IosPaymentHost,
                             gatewayId = current.gatewayId,
                             providerName = current.gatewayId.value,
-                            priceLabel = "₹149",
+                            priceLabel = demoPriceLabel("coffee_149"),
                             catalogItemId = "coffee_149",
                             onBack = { screen = IosScreen.Explore },
                         )

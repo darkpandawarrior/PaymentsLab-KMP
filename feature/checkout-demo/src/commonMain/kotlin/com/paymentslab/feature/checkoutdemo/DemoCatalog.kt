@@ -28,3 +28,6 @@ val DEMO_PRODUCTS: ImmutableList<DemoProduct> =
         DemoProduct("course_9999", "KMP Payments Course", Money.inr(9999)),
         DemoProduct("ebook_usd_9", "E-book (USD)", Money.usd(9)),
     )
+
+/** The catalog's formatted price for [catalogItemId], so screens never hard-code a price string. */
+fun demoPriceLabel(catalogItemId: String): String = DEMO_PRODUCTS.first { it.catalogItemId == catalogItemId }.priceLabel

@@ -16,6 +16,7 @@ import com.paymentslab.core.designsystem.AppShellDestination
 import com.paymentslab.core.designsystem.PaymentsLabTheme
 import com.paymentslab.core.gatewaycatalog.allHostedGatewayConfigs
 import com.paymentslab.feature.checkoutdemo.CheckoutRoot
+import com.paymentslab.feature.checkoutdemo.demoPriceLabel
 import com.paymentslab.feature.lab.LabHomeRoot
 import com.paymentslab.feature.lab.ProviderLabRoot
 import com.siddharth.kmp.paymentsapi.GatewayId
@@ -74,7 +75,7 @@ fun WebAppRoot() {
                                 (allHostedGatewayConfigs + webOnlyHostedGatewayConfigs)
                                     .firstOrNull { it.gatewayId == current.gatewayId }
                                     ?.displayName ?: current.gatewayId.value,
-                            priceLabel = "₹149",
+                            priceLabel = demoPriceLabel("coffee_149"),
                             catalogItemId = "coffee_149",
                             onBack = { screen = WebScreen.Explore },
                         )
