@@ -55,7 +55,7 @@ because a client-side `Success` is only ever a hint.
 </details>
 
 <!-- AUTOGEN:stats -->
-> **At a glance**, **48-module** KMP architecture: **17 local** (9 core · 4 feature · 4 app/iOS/backend) + **31 composed** via `includeBuild(external/kmp-toolkit)` (12 shared core · 19 payment-provider gateways), **26** deterministic Roborazzi screenshots. *Numbers auto-generated from `settings.gradle.kts` by `scripts/gen-readme.sh`.*
+> **At a glance**, **48-module** KMP architecture: **17 local** (9 core · 4 feature · 4 app/iOS/backend) + **31 composed** via `includeBuild(external/kmp-toolkit)` (12 shared core · 19 payment-provider gateways), **28** deterministic Roborazzi screenshots. *Numbers auto-generated from `settings.gradle.kts` by `scripts/gen-readme.sh`.*
 <!-- /AUTOGEN:stats -->
 
 ## Why PaymentsLab-KMP
