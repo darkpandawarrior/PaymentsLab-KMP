@@ -51,9 +51,11 @@ Source: `Theme.kt` (`PaymentsLabLightColors`, `PaymentsLabDarkColors`).
 | errorContainer | #FFDAD6 | #93000A |
 | onErrorContainer | #410002 | #FFDAD6 |
 
-Status tones (`StatusColors`, theme-independent, internal): Success #1E9E6A (settlement done,
+Status tones (`StatusColors`, theme-independent, internal; features reach them only through the public `StatusTone` and `StatusPill`): Success #1E9E6A (settlement done,
 sandbox ready), Warning #B57900 (KYC gated), Danger #CE3B3B (failed), Neutral #8A8894 (pending,
-coming soon), Info #3B6FCE (mock mode: real code, simulated end to end).
+coming soon), Info #3B6FCE (mock mode: real code, simulated end to end). The dot and tint use the pure tone; the
+label text is the tone blended 50% toward `onSurface` (`asLabelOn`), which clears 4.5:1 on its own
+14% tint in light and dark (pinned by `StatusContrastTest`). The raw tones measured 2.8 to 4.6:1.
 
 Hero gradient (`PaymentsLabHeroGradient`): #7C3AED to #EC4899, left to right, same in both themes.
 Gateway monograms hash to a fixed ten-colour palette in `GatewayBranding.kt` (violet #6D28D9, sky
@@ -74,8 +76,9 @@ library module (it broke `Res` generation on Compose Multiplatform beta02 and be
 
 `DesignTokens.Spacing` (4dp grid): xs 4, sm 8, md 12, lg 16, xl 24, xxl 32. Shell chrome
 (`AppShell.kt`): bottom `NavigationBar` with a centre "Pay" FAB (24dp card icon, primary
-container). Screens sit in `LabScaffold`. Money is formatted by `MoneyFormat.kt` and animates with
-`AnimatedAmount`; do not format amounts by hand.
+container). Screens sit in `LabScaffold`. Money is formatted by `MoneyFormat.kt` (symbol, grouped digits, two decimals; INR groups
+2,49,900.00) and animates with `AnimatedAmount`, which calls the same formatter; do not format
+amounts by hand. Checkout hides the bottom bar and Pay FAB (`AppShell(showChrome = false)`).
 
 ## Elevation & Depth
 
@@ -100,7 +103,10 @@ Landing page: `site/index.html`.
 
 `DesignTokens.Motion`: SHORT 150, MEDIUM 400, LONG 900 ms, `FastOutSlowInEasing`. `shimmer()` is a
 1.4 s sweep that marks mock mode. Every animated component must check `LocalReducedMotion` first
-(`Motion.kt`); the host wires it to the platform setting.
+(`Motion.kt`); the host wires it to the platform setting (Android: `MainActivity` provides it from
+`ANIMATOR_DURATION_SCALE == 0`; iOS and web do not wire it yet).
+Haptics: nav tab and gateway chip `SegmentTick`, `PrimaryButton` and Pay FAB `ContextClick`,
+`SuccessBurst` `Confirm`, `FailureShake` `Reject`.
 
 ## Do's and Don'ts
 
@@ -131,6 +137,7 @@ internal and duplicated in the toolkit `StepTimeline`; the two success and dange
 | Date | Change | Why | Source |
 |---|---|---|---|
 | 2026-10-09 | Initial version, distilled from the code token files and existing design docs | Establish design direction for agents | DESIGN.md rollout |
+| 2026-10-19 | Status label contrast, single money formatter, reduced-motion wiring on Android, haptics, chrome hidden on checkout | UI/UX audit quick wins | audit-paymentslab.md |
 
 ## Open questions
 
