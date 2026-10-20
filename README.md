@@ -11,8 +11,8 @@ because a client-side `Success` is only ever a hint.
 
 [![CI](https://github.com/darkpandawarrior/PaymentsLab-KMP/actions/workflows/ci.yml/badge.svg)](https://github.com/darkpandawarrior/PaymentsLab-KMP/actions/workflows/ci.yml)
 <!-- AUTOGEN:versions -->
-![Kotlin](https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin&logoColor=white)
-![Compose Multiplatform](https://img.shields.io/badge/Compose%20MP-1.13.0--alpha01-4285F4?logo=jetpackcompose&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7F52FF?logo=kotlin&logoColor=white)
+![Compose Multiplatform](https://img.shields.io/badge/Compose%20MP-1.13.0--alpha02-4285F4?logo=jetpackcompose&logoColor=white)
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Web-3DDC84)
 ![Ktor](https://img.shields.io/badge/Ktor-3.6.0-087CFA?logo=ktor&logoColor=white)
 <!-- /AUTOGEN:versions -->
