@@ -17,7 +17,9 @@ plugins {
 kotlin {
     android {
         namespace = "com.paymentslab.core.gatewaycatalog.nonweb"
-        compileSdk = 37
+        compileSdk {
+            version = release(37) { minorApiLevel = 1 }
+        }
         minSdk = 24
     }
 
