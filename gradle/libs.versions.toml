@@ -1,12 +1,12 @@
 [versions]
-agp = "9.5.0-alpha08"
-kotlin = "2.4.20"
+agp = "9.5.0-alpha10"
+kotlin = "2.4.21"
 ksp = "2.3.12"
 # Every org.jetbrains.compose.* artifact MUST carry this exact string (version.ref =
 # "compose-multiplatform"), not a hand-typed copy. A lower pin loses to the plugin on Gradle's
 # highest-wins and silently goes inert; that drift is what broke :app:dependencyGuard elsewhere
 # in this family. EXCEPTION: material-icons-extended is not on this train (frozen at 1.7.3).
-compose-multiplatform = "1.13.0-alpha01"
+compose-multiplatform = "1.13.0-alpha02"
 materialIconsExtended = "1.7.3"
 compose-bom = "2026.09.00"
 
@@ -24,11 +24,11 @@ napier = "2.7.1"
 security-crypto = "1.1.0"
 
 core-ktx = "1.19.0"
-activity-compose = "1.14.0-alpha02"
-lifecycle = "2.12.0-alpha03"
+activity-compose = "1.14.0-alpha03"
+lifecycle = "2.12.0-alpha04"
 workmanager = "2.12.0-rc01"
 kmpworkmanager = "3.5.0"
-jbNavigationCompose = "2.10.0-beta01"
+jbNavigationCompose = "2.10.0-rc01"
 coil3 = "3.6.3"
 compose-webview-multiplatform = "2.0.3"
 

@@ -15,7 +15,9 @@ kotlin {
 
     android {
         namespace = "com.paymentslab.core.common"
-        compileSdk = 37
+        compileSdk {
+            version = release(37) { minorApiLevel = 1 }
+        }
         minSdk = 24
     }
 
