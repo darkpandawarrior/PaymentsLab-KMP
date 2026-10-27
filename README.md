@@ -90,13 +90,13 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
 
 ## Highlights
 
-- 🧩 **Modular KMP architecture, 70 gateways behind it.** One Gradle module per native-SDK
+- **Modular KMP architecture, 70 gateways behind it.** One Gradle module per native-SDK
   provider, contributed into a registry via Koin `getAll<PaymentGateway>()`, adding gateway *N+1*
   touches no existing code. Feature modules never depend on each other; they meet only at the
   `:app` composition root. The catalog spans 15 native-SDK integrations, 1 internal wallet ledger,
   44 hosted-webview gateways, 7 mobile-money flows, and 3 catalog-only/KYC-gated entries, all behind
   the one contract below.
-- 💸 **More than pay-in, five money-movement rails, plus split payments.** Beyond one-shot checkout
+- **More than pay-in, five money-movement rails, plus split payments.** Beyond one-shot checkout
   the server now models **payouts** (`/payouts`, money *out* to a beneficiary), **mandates &
   subscriptions** (`/mandates` + scheduled debits and cancel), a **card vault** (`/vault`, tokenize
   once, charge later by id), **marketplace Connect onboarding** (`/connect`, sub-merchant KYC + split
@@ -105,39 +105,39 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
   fails. Nine new provider modules ride these rails, Paystack, Flutterwave, Paytm, Xendit, M-Pesa,
   Peach and NMI, plus a `wallet` balance rail and a `cash` record-only gateway, every one honest
   `MOCK_MODE` until real sandbox keys are set. Each rail is idempotency-keyed like the pay-in path.
-- 🔌 **One contract, seven real SDKs, plus two generic archetypes.** Razorpay, Cashfree, Stripe
+- **One contract, seven real SDKs, plus two generic archetypes.** Razorpay, Cashfree, Stripe
   (+ Google Pay), Square, Omise, and a raw UPI intent flow all implement the same tiny
   `PaymentGateway` interface. The Activity-callback SDKs are bridged into suspending coroutines by
   a `PaymentHost` that never leaks an `Activity` upward. `provider:hosted-webview` and
   `provider:mobile-money` cover the other 51 gateways generically, redirect-and-return-URL
   checkout and confirm-on-the-payer's-phone flows, respectively, behind the same contract.
-- 🏠 **A real Home dashboard, not just a catalog.** Animated gateway-count and success-rate stats,
+- **A real Home dashboard, not just a catalog.** Animated gateway-count and success-rate stats,
   recent activity, one tap into Explore, the redesign's front door, backed by the same
   server-authoritative payment journal every other screen reads.
-- 🎨 **Real gateway branding, honestly degraded.** A `GatewayBranding` registry renders each
+- **Real gateway branding, honestly degraded.** A `GatewayBranding` registry renders each
   provider's actual logo where a rights-cleared source exists (8 gateways today, sourced from
   `simple-icons`, CC0), and falls back to a deterministic, hash-colored monogram for the other 62
   gateways. Every gateway gets an intentional-looking badge, and adding gateway *N+1* needs zero
   registry upkeep.
-- 🔒 **Motion that reinforces security, not just decorates.** A brief `ShieldPulse` shield-icon
+- **Motion that reinforces security, not just decorates.** A brief `ShieldPulse` shield-icon
   draw-in on every payment-bearing screen visually reflects the `FLAG_SECURE` protection already in
   place underneath it, a half-second cue, not a gimmick, and it respects `LocalReducedMotion` like
   every other animated component in the app.
-- 🪪 **Env-backed credentials that auto-degrade honestly.** `core:config` resolves each gateway's
+- **Env-backed credentials that auto-degrade honestly.** `core:config` resolves each gateway's
   sandbox keys from `PLAB_<GATEWAY>_<MODE>_<KEY>` env vars; a gateway with no resolved credentials
   auto-degrades from `SANDBOX_READY` to `MOCK_MODE` instead of silently pretending to work, the Lab
   stays demoable and honest with zero real credentials configured.
-- 🛡️ **Server is the source of truth.** A companion Ktor server creates orders (**price resolved
+- **Server is the source of truth.** A companion Ktor server creates orders (**price resolved
   server-side**), verifies payments with **real HMAC-SHA256** (Razorpay), and reconciles idempotent,
   signature-checked webhooks, the client callback is only ever treated as a hint.
-- ⏱️ **Process-death recovery, for real.** Every in-flight payment is journaled to Room *before* the
+- **Process-death recovery, for real.** Every in-flight payment is journaled to Room *before* the
   SDK opens; on cold start the orchestrator finds unresolved payments and reconciles them.
-- 🔎 **Redaction by default.** A single choke point masks any secret/PII-shaped field before it can
+- **Redaction by default.** A single choke point masks any secret/PII-shaped field before it can
   be rendered in the Lab timeline or written to a log.
-- 🔐 **VAPT-grade security suite.** `:security` (composed from `external/kmp-toolkit`), real Android Keystore AES-256-GCM at-rest
+- **VAPT-grade security suite.** `:security` (composed from `external/kmp-toolkit`), real Android Keystore AES-256-GCM at-rest
   encryption, `FLAG_SECURE` on payment screens (blocks screenshots/recording), device-integrity
   checks (root/Magisk, emulator, debugger), and a certificate-pinning config.
-- 🤖 **AI-assisted explainers, honest about the floor.** The provider lab's error panel and its
+- **AI-assisted explainers, honest about the floor.** The provider lab's error panel and its
   gateway-to-gateway flow comparison both work in two tiers: a deterministic explanation
   (`GatewayStatusMapping`, `FlowDiff.compare`) that's always present, no network, no key, plus an
   optional model-written elaboration streamed token by token from whichever `AiProvider` chain is
@@ -145,11 +145,11 @@ mid-payment is always recoverable, and a **redaction layer** so no secret or PII
   settings** screen exposes consent, key entry and on-device model download; every raw third-party
   payload is wrapped in `PromptGuard` before it reaches a model. Android only today, see
   [AI-assisted explainers](#ai-assisted-explainers).
-- ♻️ **Pure, replayable state machine.** The lifecycle is a pure `(State, Event) -> Effects` reducer
+- **Pure, replayable state machine.** The lifecycle is a pure `(State, Event) -> Effects` reducer
   (zero coroutines/DI/IO); the orchestrator just executes its effects. A payment's path is a
   recorded event log that replays byte-for-byte identically, the auditing property money movement
   wants.
-- 🧪 **A real quality gate.** ktlint + detekt across every module (including KMP `commonMain`),
+- **A real quality gate.** ktlint + detekt across every module (including KMP `commonMain`),
   fake-based unit tests for the orchestrator/ViewModels/backend, **deterministic Roborazzi
   screenshot tests** covering every redesigned screen, run on every push via GitHub Actions.
 
@@ -205,7 +205,7 @@ Four screens behind one center action, not a flat list of tabs:
   logo or a deterministic monogram fallback. Tapping one opens a lab that executes the full
   lifecycle and renders it as a **live timeline**: order created → SDK launched → client result →
   server verification → settled, each step expandable to its actual redacted payload. This is the
-  teaching surface, the sequence, and the fact that a client `Success` still has to pass through
+  teaching surface, the sequence, and that a client `Success` still has to pass through
   *Verifying* before it's trusted, is the whole point.
 - **Checkout**: reached via the bottom bar's center "Pay" FAB, not a peer tab: a product checkout
   (cart → pay) that reuses the exact same provider registry and orchestrator, with an inline
@@ -403,7 +403,7 @@ flowchart TD
     UI["Compose UI<br/>(Home · Explore · Checkout · Activity)"] --> ORCH["PaymentOrchestrator<br/>core:orchestration<br/>(effectful shell)"]
     ORCH --> FSM["Pure reducer<br/>(State,Event)-&gt;Effects"]
 
-    subgraph REG["Gateway registry — Koin getAll&lt;PaymentGateway&gt;()"]
+    subgraph REG["Gateway registry, Koin getAll&lt;PaymentGateway&gt;()"]
         NATIVE["7 native-SDK modules<br/>razorpay · stripe · cashfree<br/>square · omise · googlepay · upi-intent"]
         GENERIC["2 generic archetypes<br/>hosted-webview (47) · mobile-money (8)"]
         RAILMOD["rail-backed modules<br/>paystack · flutterwave · paytm · xendit<br/>mpesa · peach · nmi · wallet · cash · connect"]
@@ -415,7 +415,7 @@ flowchart TD
 
     ORCH -->|"server = truth"| BE["Ktor backend"]
 
-    subgraph BACKEND["backend — Ktor JVM (source of truth)"]
+    subgraph BACKEND["backend, Ktor JVM (source of truth)"]
         PAYIN["Pay-in<br/>/orders · /verify (HMAC-SHA256)<br/>/webhooks (idempotent)"]
         RAILS["Rails<br/>/payouts · /mandates · /vault<br/>/connect · /wallet"]
     end
@@ -431,13 +431,13 @@ flowchart TD
 ```
 Local (this repo, 14 include()s in settings.gradle.kts)
 ────────────────────────────────────────────────────────
-app/                       Android composition root — Koin wiring, navigation, AndroidPaymentHost
-backend/                   Ktor JVM server — orders, verify, webhooks, status (server = truth),
+app/                       Android composition root, Koin wiring, navigation, AndroidPaymentHost
+backend/                   Ktor JVM server, orders, verify, webhooks, status (server = truth),
                            plus payout / mandate / vault / connect / wallet-ledger rails
 core/
   config/                  Env-backed credential resolution (PLAB_* keys), MOCK_MODE auto-degrade  (KMP)
   protocol/                @Serializable wire DTOs shared with the backend's JVM target    (KMP + jvm)
-  orchestration/           the effectful shell + fsm/ — a PURE (State,Event)->Effects reducer it
+  orchestration/           the effectful shell + fsm/, a PURE (State,Event)->Effects reducer it
                            drives; the tested heart (journal-first, server-as-truth, replayable)
   network/                 Ktor client implementing PaymentBackend
   data/                    Room KMP journal (process-death recovery)
@@ -446,16 +446,16 @@ core/
                            GatewayBranding (real logo / monogram fallback), AppShell (nav chrome)
   common/                  UiText, KMP logging, initKoin()/platformModule() (iOS-ready DI entry point)
 feature/
-  home/                    dashboard — animated stats, recent activity (the app's front door)
+  home/                    dashboard, animated stats, recent activity (the app's front door)
   lab/                     provider catalog (Explore) + live per-provider lab timeline
   checkout-demo/           product checkout, reached via the bottom bar's center FAB
   history/                 transaction log from the Room journal (Activity), with status filters
 ios/shared/                iOS-facing KMP surface (see iOS readiness)
-app/ .../work/             PaymentReconciliationWorker — WorkManager process-death reconciliation
+app/ .../work/             PaymentReconciliationWorker, WorkManager process-death reconciliation
 build-logic/               convention plugins (kmp.library / kmp.compose / cmp.feature / …)
 
 Composed via includeBuild("external/kmp-toolkit") + dependency substitution
-(29 modules — none of these have a local build.gradle.kts; the local core/security
+(29 modules, none of these have a local build.gradle.kts; the local core/security
 and provider/* directories are stale build/ cache left over from the extraction)
 ────────────────────────────────────────────────────────
 payments-api/              The frozen contract: PaymentGateway, PaymentResult, PaymentHost,
@@ -469,7 +469,7 @@ provider/
   hosted-webview/          generic archetype for SDK-less, redirect-and-return-URL gateways (47)
   mobile-money/            generic archetype for confirm-on-payer's-phone flows (8)
   paystack/ flutterwave/ paytm/ xendit/ mpesa/ peach/ nmi/          dedicated modules (MOCK_MODE)
-  wallet/                  internal double-entry ledger rail — pay from a stored balance
+  wallet/                  internal double-entry ledger rail, pay from a stored balance
   cash/                    record-only "mark paid in cash" gateway (no SDK, no network)
   stripe-connect/          marketplace sub-merchant onboarding + split payouts
 ```
@@ -551,7 +551,7 @@ version-specific issue.
 git clone https://github.com/darkpandawarrior/PaymentsLab-KMP.git
 cd PaymentsLab-KMP
 
-# 1. Start the backend (in-memory store; sandbox/test adapters) — serves on :8080
+# 1. Start the backend (in-memory store; sandbox/test adapters), serves on :8080
 ./gradlew :backend:run
 
 # 2. Build & install the app (points at 10.0.2.2:8080 from the emulator)
@@ -631,7 +631,7 @@ gateway auto-degrades to `MOCK_MODE`; set → it upgrades to real, no code chang
   need TWO artifacts: `org.jetbrains.compose.ui:ui-tooling-preview` for the annotation in
   `commonMain`, `org.jetbrains.compose.ui:ui-tooling` on `androidRuntimeClasspath` for the renderer
   (`:app`, being a plain Android module, gets the AndroidX equivalent via `debugImplementation`).
-  The annotation is `androidx.compose.ui.tooling.preview.Preview` — the multiplatform one since
+  The annotation is `androidx.compose.ui.tooling.preview.Preview`, the multiplatform one since
   Compose Multiplatform 1.10; the `org.jetbrains.compose` namespaced one is deprecated.
 - **README version badges are generated.** `scripts/gen-readme.sh` now fills the
   `<!-- AUTOGEN:versions -->` span from `gradle/libs.versions.toml`, and `readme.yml` fails a PR
@@ -688,7 +688,7 @@ gateway auto-degrades to `MOCK_MODE`; set → it upgrades to real, no code chang
 
 ## iOS readiness
 
-The core is Kotlin Multiplatform, and iOS isn't a roadmap item anymore, it's a real, working app.
+The core is Kotlin Multiplatform, and iOS is a real, working app, no longer a roadmap item.
 `ios/shared` packages the KMP-safe core plus all 5 native-SDK gateways with real Swift-side SDK
 implementations (Stripe, Razorpay, Cashfree, Omise, Square) into a `.framework`, consumed by a
 genuine Xcode project at `ios/iosApp/` with its own 5-screen navigation shell mirroring Android's.

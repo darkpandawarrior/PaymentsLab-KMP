@@ -62,7 +62,7 @@ private const val Gemma31bApproxSizeMb = 554
  * [buildProviderChain]'s required last resort when neither on-device nor any cloud key is
  * configured — every real call in that state should read as "nothing is set up", not a crash.
  *
- * // ponytail: a static NoKey; this app ships no app-specific offline heuristic tier (that would
+ * // a static NoKey; this app ships no app-specific offline heuristic tier (that would
  * // need its own model of "canned replies"), unlike a domain app with a rule-based fallback of
  * // its own.
  */

@@ -77,7 +77,7 @@ class VaultStore {
                 last4 = last4,
                 createdAtEpochMs = System.currentTimeMillis(),
             )
-        // ponytail: won the key race; store now. A concurrent loser could observe this a hair before
+        // won the key race; store now. A concurrent loser could observe this a hair before
         // the write lands — acceptable for an in-memory demo store (per-account locks if it mattered).
         customerInstruments[instrumentId] = record
         return SaveResult(record, isNew = true)

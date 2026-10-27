@@ -12,7 +12,7 @@ import kotlin.concurrent.withLock
  * one account, credit another, never a bare balance write. [post] is idempotent (same key → same
  * txn, applied once); [balance] reads the current account balance.
  *
- * // ponytail: concurrency ceiling is a single [ReentrantLock] guarding the whole read-check-write per
+ * // concurrency ceiling is a single [ReentrantLock] guarding the whole read-check-write per
  * // post — fine for an in-memory demo with a handful of accounts; upgrade to per-account locks (or a
  * // real DB's row-level locking) if throughput across many accounts ever matters.
  */

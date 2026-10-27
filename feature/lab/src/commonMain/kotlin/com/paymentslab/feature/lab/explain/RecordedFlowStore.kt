@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
  * into this every time a run settles; only the latest trace per gateway is kept, which is all a
  * structural comparison (see [FlowTrace]) needs.
  *
- * // ponytail: process-lifetime, unpersisted, single Koin `single` shared by every screen — the Lab
+ * // process-lifetime, unpersisted, single Koin `single` shared by every screen — the Lab
  * // has no need to compare a flow recorded in a previous app session, so there is nothing to persist.
  */
 class RecordedFlowStore {

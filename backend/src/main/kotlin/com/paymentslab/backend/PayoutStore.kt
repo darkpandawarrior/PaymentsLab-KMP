@@ -60,7 +60,7 @@ class PayoutStore {
 
         val existingPayoutId = idempotencyKeyToPayoutId.putIfAbsent(idempotencyKey, payoutId)
         if (existingPayoutId != null) {
-            // ponytail: orphans one speculative record per lost race, same tradeoff PaymentStore
+            // orphans one speculative record per lost race, same tradeoff PaymentStore
             // already accepts for an in-memory demo store.
             val existing =
                 requireNotNull(records[existingPayoutId]) {
