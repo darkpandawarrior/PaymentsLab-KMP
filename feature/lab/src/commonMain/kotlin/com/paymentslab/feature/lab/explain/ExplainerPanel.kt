@@ -71,7 +71,7 @@ fun ExplainerPanel(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                // ponytail: silent on a model failure (NoKey/Network/RateLimited/...) rather than
+                // silent on a model failure (NoKey/Network/RateLimited/...) rather than
                 // surfacing the raw AiFailure — the deterministic line above already stands on its
                 // own; a dedicated per-reason message is only worth it if users ask why nothing more
                 // showed up.

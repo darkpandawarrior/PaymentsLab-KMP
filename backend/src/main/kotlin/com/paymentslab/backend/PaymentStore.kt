@@ -79,7 +79,7 @@ class PaymentStore {
         if (existingOrderId != null) {
             // Someone else won the race for this key — this caller's speculative record above is
             // orphaned in `records` (harmless: nothing else ever looks it up by its unique orderId).
-            // ponytail: leaves one dead entry per lost race; fine for an in-memory demo store, revisit
+            // leaves one dead entry per lost race; fine for an in-memory demo store, revisit
             // if this ever backs a real DB with retention/GC concerns.
             val existing =
                 requireNotNull(records[existingOrderId]) {

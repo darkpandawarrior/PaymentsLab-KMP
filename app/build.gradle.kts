@@ -67,7 +67,7 @@ android {
 
     defaultConfig {
         applicationId = "com.paymentslab.app"
-        // Bumped 24 -> 26 for this lane: :ai's on-device LLM tier (ML Kit GenAI / MediaPipe) ships
+        // Bumped 24 -> 26 for this change: :ai's on-device LLM tier (ML Kit GenAI / MediaPipe) ships
         // an AndroidManifest with minSdkVersion 26 and the manifest merger hard-fails an app below
         // that (Candidai, the other family app on this AI stack, is minSdk 26 for the same
         // reason). A real device-support change, not a version bump — see the PR body.

@@ -1,10 +1,9 @@
 # PaymentsLab-KMP DESIGN.md
 
-> Inherits: house design standard (AgentHarness skill `design-md`). This file wins on conflict.
 > Also inherits the shared kmp-toolkit `DESIGN.md` (present in `external/kmp-toolkit` once its pin
 > includes it) for the toolkit pieces this app uses (`StepTimeline`, `AnimatedCounter`). This module
 > has its own `DesignTokens`, which differ from the toolkit scale; this file wins for them.
-> Agents: read this before creating or changing UI. Values live in
+> Contributors: read this before creating or changing UI. Values live in
 > `core/designsystem/src/commonMain/kotlin/com/paymentslab/core/designsystem/` (`Theme.kt`,
 > `DesignTokens.kt`, `StatusColors.kt`, `Typography.kt`, `Motion.kt`).
 > Dial: ENERGY 4 / RHYTHM 4 / MOTION 4
@@ -136,7 +135,7 @@ internal and duplicated in the toolkit `StepTimeline`; the two success and dange
 
 | Date | Change | Why | Source |
 |---|---|---|---|
-| 2026-10-09 | Initial version, distilled from the code token files and existing design docs | Establish design direction for agents | DESIGN.md rollout |
+| 2026-10-09 | Initial version, distilled from the code token files and existing design docs | Establish design direction for contributors | DESIGN.md rollout |
 | 2026-10-19 | Status label contrast, single money formatter, reduced-motion wiring on Android, haptics, chrome hidden on checkout | UI/UX audit quick wins | audit-paymentslab.md |
 
 ## Open questions
@@ -146,4 +145,4 @@ internal and duplicated in the toolkit `StepTimeline`; the two success and dange
 
 ## Evolving this file
 
-Agents: when you change UI and find this file wrong or silent, fix it in the same change and add a Changelog row. Code token files win over this file; when they disagree, correct the doc. A user correction of a visual choice with a stated reason becomes a rule here immediately. Lessons that apply beyond this repo go to the LEARNINGS log of the `design-md` skill in AgentHarness.
+Contributors: when you change UI and find this file wrong or silent, fix it in the same change and add a Changelog row. Code token files win over this file; when they disagree, correct the doc. A user correction of a visual choice with a stated reason becomes a rule here immediately. Lessons that apply beyond this repo go to the LEARNINGS log of the `design-md` skill in AgentHarness.

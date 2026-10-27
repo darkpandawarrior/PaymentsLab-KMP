@@ -74,7 +74,7 @@ class MandateStore {
 
         val existingMandateId = idempotencyKeyToMandateId.putIfAbsent(idempotencyKey, mandateId)
         if (existingMandateId != null) {
-            // ponytail: orphans one speculative record per lost race, same tradeoff PaymentStore/
+            // orphans one speculative record per lost race, same tradeoff PaymentStore/
             // PayoutStore already accept for an in-memory demo store.
             val existing =
                 requireNotNull(mandates[existingMandateId]) {

@@ -104,7 +104,7 @@ data class ProviderLabUiState(
  */
 class ProviderLabViewModel(
     private val flowRunner: PaymentFlowRunner,
-    // ponytail: defaulted rather than touching every existing test call site — this app has exactly
+    // defaulted rather than touching every existing test call site — this app has exactly
     // one composition root (Android), which always resolves the real Koin-bound singleton; the
     // default only matters to a test that doesn't care about FlowDiff.
     private val recordedFlows: RecordedFlowStore = RecordedFlowStore(),
@@ -198,7 +198,7 @@ class ProviderLabViewModel(
      * status actually settles as [PaymentStatus.FAILED], that decline is server-confirmed, so the
      * grounding is upgraded to [PaymentPhase.TERMINAL].
      *
-     * // ponytail: only covers a *client-reported* decline. A payment that fails purely server-side
+     * // only covers a *client-reported* decline. A payment that fails purely server-side
      * // (polling settles FAILED with no client Failure ever seen) has no FailureCode/raw payload to
      * // explain and is deliberately left out — add a PaymentSnapshot-based path if that case turns
      * // out to need one too.

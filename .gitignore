@@ -50,3 +50,14 @@ graphify-out/
 
 # Local PR screenshots and verification notes
 .evidence/
+
+# Agent tooling (local only)
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+CAPABILITIES.md
+.capabilities-notes.md
+.claude/
+.codex/
+.cursor/
+.ralph/

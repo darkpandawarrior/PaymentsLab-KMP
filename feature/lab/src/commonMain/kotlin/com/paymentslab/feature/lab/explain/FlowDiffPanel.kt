@@ -67,7 +67,7 @@ fun FlowDiffPanel(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                // ponytail: silent on a model failure, same rationale as ExplainerPanel — the
+                // silent on a model failure, same rationale as ExplainerPanel — the
                 // deterministic summary above already stands on its own.
                 explainer != null && !streamDone ->
                     Text(
