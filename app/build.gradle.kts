@@ -57,6 +57,12 @@ val appFingerprint = readFingerprint()
 android {
     namespace = "com.paymentslab.app"
 
+    // The bumped `shared.android.application` convention compiles against 37.0, but the library
+    // modules (feature:lab etc.) require 37.1, and AGP fails checkDebugAarMetadata when :app is lower.
+    compileSdk {
+        version = release(37) { minorApiLevel = 1 }
+    }
+
     // The shared `shared.android.application` convention plugin defaults `buildConfig = false`
     // (matches AGP 9's own default). This app relies on BuildConfig — PaymentsLabApplication reads
     // BuildConfig.BUILD_TYPE/VERSION_NAME, security/network read BACKEND_URL + BYPASS_* — so it must
