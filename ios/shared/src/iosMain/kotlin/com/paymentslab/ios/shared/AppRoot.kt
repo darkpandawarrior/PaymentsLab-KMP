@@ -59,7 +59,7 @@ private sealed interface IosScreen {
  * The iOS app's whole UI: Home / Explore (catalog → provider lab) / Activity, plus Checkout via
  * the shared [AppShell]'s center FAB — now at parity with Android's [AppShellDestination] set
  * (see Task 19 in `docs/superpowers/plans/2026-07-04-ui-ux-redesign.md`). Still `remember`-backed
- * state instead of `jb.navigation.compose`'s full graph (Navigation3 is Android-only), but the
+ * state instead of `jb.navigation.compose`'s full graph, but the
  * screen set now matches Android's.
  */
 @Composable
