@@ -1,12 +1,12 @@
 [versions]
-agp = "9.5.0-alpha10"
-kotlin = "2.4.21"
+agp = "9.6.0-alpha03"
+kotlin = "2.5.0-Beta2"
 ksp = "2.3.12"
 # Every org.jetbrains.compose.* artifact MUST carry this exact string (version.ref =
 # "compose-multiplatform"), not a hand-typed copy. A lower pin loses to the plugin on Gradle's
 # highest-wins and silently goes inert; that drift is what broke :app:dependencyGuard elsewhere
 # in this family. EXCEPTION: material-icons-extended is not on this train (frozen at 1.7.3).
-compose-multiplatform = "1.13.0-alpha02"
+compose-multiplatform = "1.13.0-beta02"
 materialIconsExtended = "1.7.3"
 compose-bom = "2026.09.00"
 
@@ -17,16 +17,16 @@ kotlinx-collections-immutable = "0.5.2"
 
 koin = "4.2.2"
 room = "2.8.5"
-sqlite-bundled = "2.8.0-alpha01"
-datastore = "1.3.0-alpha11"
+sqlite-bundled = "2.8.0-alpha03"
+datastore = "1.3.0"
 multiplatform-settings = "1.3.0"
 napier = "2.7.1"
 security-crypto = "1.1.0"
 
-core-ktx = "1.19.0"
+core-ktx = "1.19.1"
 activity-compose = "1.14.0-alpha03"
-lifecycle = "2.12.0-alpha04"
-workmanager = "2.12.0-rc01"
+lifecycle = "2.12.0-alpha05"
+workmanager = "2.12.0"
 kmpworkmanager = "3.5.0"
 jbNavigationCompose = "2.10.0-rc01"
 coil3 = "3.6.3"
@@ -39,7 +39,7 @@ logback = "1.6.3"
 # Payment provider SDKs (Android-only, live in provider:* androidMain)
 razorpay = "1.6.41"
 # checkout's POM declares core/standard-core as LATEST, so pin them for reproducible builds
-razorpay-core = "1.0.19"
+razorpay-core = "1.0.22"
 razorpay-standard-core = "1.7.19"
 cashfree = "2.6.0"
 stripe = "23.19.0"
