@@ -61,11 +61,11 @@ Checks:
 ./gradlew :app:recordRoborazziDebug      # re-record screenshot baselines
 ```
 
-Credentials come from environment variables named `PLAB_<GATEWAY>_<MODE>_<KEY>` (see `backend/.env.example` for the original set). A gateway with no credentials does not fake success. It shows a `MOCK_MODE` badge, so you can see what would need a key to go live.
+Credentials come from environment variables named `PLAB_<GATEWAY>_<MODE>_<KEY>`, for example `PLAB_PAYSTACK_TEST_SECRET_KEY`. The Razorpay, Stripe and Cashfree server adapters predate that scheme and read unprefixed names such as `RAZORPAY_KEY_ID` and `STRIPE_SECRET`, listed in `backend/.env.example`. A gateway with no credentials does not fake success. It shows a `MOCK_MODE` badge, so you can see what would need a key to go live.
 
 ## What it covers
 
-- **Gateways.** The Android app registers gateways into one Koin registry (`getAll<PaymentGateway>()`), so adding one touches no existing module. There are 19 provider modules, including Stripe, Razorpay, Cashfree, Square, Omise, Google Pay, raw UPI intent, Paystack, Paytm, Xendit, M-Pesa and a generic hosted-webview that serves most of the rest from config. `docs/providers/` has 75 pages, one per provider, each saying what integrating it takes and why a gateway is real or mock.
+- **Gateways.** The Android app registers gateways into one Koin registry (`getAll<PaymentGateway>()`), so adding one touches no existing module. There are 19 provider modules, including Stripe, Razorpay, Cashfree, Square, Omise, Google Pay, raw UPI intent, Paystack, Paytm, Xendit, M-Pesa and a generic hosted-webview that serves most of the rest from config. `docs/providers/` has 75 pages (70 providers and 5 iOS bridge notes), each saying what integrating it takes and why a gateway is real or mock.
 - **More than pay-in.** The backend also has routes for payouts, mandates and recurring debits, a card vault, Stripe Connect style onboarding, and an internal wallet ledger (`/payouts`, `/mandates`, `/vault`, `/connect`, `/wallet` in `backend/`). They run against an in-memory store and are labelled `MOCK_MODE` until real keys exist.
 - **The orchestrator.** Payment lifecycle is a pure `(State, Event)` to effects reducer in `core:orchestration`, and the orchestrator only executes the effects. Given the same event log you get the same effects, which is what the tests rely on.
 - **Redaction.** One `Redactor` allowlist masks secret-shaped and personal fields before anything reaches the timeline or a log.
@@ -73,7 +73,7 @@ Credentials come from environment variables named `PLAB_<GATEWAY>_<MODE>_<KEY>` 
 - **Explainers.** An error explainer and a "compare two runs" screen give a plain-English line without any model. Where an AI provider is bound (Android only), they add a streamed elaboration, with a gateway's raw error text passed through `PromptGuard` first.
 - **iOS.** The five-screen app runs on iOS from `ios/shared`. Stripe, Razorpay, Cashfree, Omise and Square have real Swift-side SDK bridges there; the versions are in `docs/providers/*-ios.md`.
 
-Screens: Home, Explore (the lab), Checkout (reached from the centre Pay button) and Activity. Walkthroughs: [explore and verify](docs/gifs/explore_verify_flow.gif), [checkout](docs/gifs/checkout_flow.gif), [activity](docs/gifs/activity_flow.gif).
+Screens: Home, Explore (the lab, with a detail screen per provider), Activity, and Checkout, reached from the centre Pay button. Walkthroughs: [explore and verify](docs/gifs/explore_verify_flow.gif), [checkout](docs/gifs/checkout_flow.gif), [activity](docs/gifs/activity_flow.gif).
 
 ## Layout
 
