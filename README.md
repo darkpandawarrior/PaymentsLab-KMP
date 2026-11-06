@@ -2,7 +2,7 @@
 
 # PaymentsLab-KMP
 
-A Kotlin Multiplatform app that runs payment flows through one `PaymentGateway` interface, with 70 gateways behind it, with a small Ktor backend that does the parts a client cannot be trusted with. Each payment is drawn as a live timeline (order created, SDK launched, client result, server verification, settled) with the redacted payload at every step.
+A Kotlin Multiplatform app that runs payment flows through one `PaymentGateway` interface, with 70 gateways behind it and a small Ktor backend that does the parts a client cannot be trusted with. Each payment is drawn as a live timeline (order created, SDK launched, client result, server verification, settled) with the redacted payload at every step.
 
 <!-- AUTOGEN:versions -->
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.5.0--Beta2-7F52FF?logo=kotlin&logoColor=white)
@@ -65,7 +65,7 @@ Credentials come from environment variables named `PLAB_<GATEWAY>_<MODE>_<KEY>`,
 
 ## What it covers
 
-- The Android app registers gateways into one Koin registry (`getAll<PaymentGateway>()`), so adding one touches no existing module. Hosted checkout and mobile money modules cover the other 51 gateways generically. There are 19 provider modules, including Stripe, Razorpay, Cashfree, Square, Omise, Google Pay, raw UPI intent, Paystack, Paytm, Xendit, M-Pesa and a generic hosted-webview that serves most of the rest from config. `docs/providers/` has 75 pages (70 providers and 5 iOS bridge notes), each saying what integrating it takes and why a gateway is real or mock.
+- The Android app registers gateways into one Koin registry (`getAll<PaymentGateway>()`), so adding one touches no existing module. `provider:hosted-webview` and `provider:mobile-money` cover the other 51 gateways generically. There are 19 provider modules, including Stripe, Razorpay, Cashfree, Square, Omise, Google Pay, raw UPI intent, Paystack, Paytm, Xendit, M-Pesa and a generic hosted-webview that serves most of the rest from config. `docs/providers/` has 75 pages (70 providers and 5 iOS bridge notes), each saying what integrating it takes and why a gateway is real or mock.
 - Past pay-in, the backend also has routes for payouts, mandates and recurring debits, a card vault, Stripe Connect style onboarding, and an internal wallet ledger (`/payouts`, `/mandates`, `/vault`, `/connect`, `/wallet` in `backend/`). They run against an in-memory store and are labelled `MOCK_MODE` until real keys exist.
 - Payment lifecycle is a pure `(State, Event)` to effects reducer in `core:orchestration`, and the orchestrator only executes the effects. Given the same event log you get the same effects, which is what the tests rely on.
 - One `Redactor` allowlist masks secret-shaped and personal fields before anything reaches the timeline or a log.
