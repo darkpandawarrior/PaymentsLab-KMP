@@ -26,7 +26,7 @@ The rule the whole design follows: **a client-side `Success` is a hint, never pr
 
 ![The provider lab running a payment](docs/screenshots/provider_lab_screen_running.png)
 
-## Run it
+## Getting it running
 
 Clone with submodules. `kmp-toolkit` (which holds the shared libraries and 19 provider modules) and `kmp-build-logic` sit under `external/` and are pulled in with `includeBuild`, so an ordinary clone will not configure.
 
@@ -65,13 +65,13 @@ Credentials come from environment variables named `PLAB_<GATEWAY>_<MODE>_<KEY>`,
 
 ## What it covers
 
-- **Gateways.** The Android app registers gateways into one Koin registry (`getAll<PaymentGateway>()`), so adding one touches no existing module. There are 19 provider modules, including Stripe, Razorpay, Cashfree, Square, Omise, Google Pay, raw UPI intent, Paystack, Paytm, Xendit, M-Pesa and a generic hosted-webview that serves most of the rest from config. `docs/providers/` has 75 pages (70 providers and 5 iOS bridge notes), each saying what integrating it takes and why a gateway is real or mock.
-- **More than pay-in.** The backend also has routes for payouts, mandates and recurring debits, a card vault, Stripe Connect style onboarding, and an internal wallet ledger (`/payouts`, `/mandates`, `/vault`, `/connect`, `/wallet` in `backend/`). They run against an in-memory store and are labelled `MOCK_MODE` until real keys exist.
-- **The orchestrator.** Payment lifecycle is a pure `(State, Event)` to effects reducer in `core:orchestration`, and the orchestrator only executes the effects. Given the same event log you get the same effects, which is what the tests rely on.
-- **Redaction.** One `Redactor` allowlist masks secret-shaped and personal fields before anything reaches the timeline or a log.
-- **Security layers**, with their limits written down in `docs/SECURITY.md`: `FLAG_SECURE` on payment screens, Keystore-backed storage for saved tokens, a certificate pinning setup (the pins in the repo are placeholders), and launch-time root and debugger checks. None of that replaces the server check.
-- **Explainers.** An error explainer and a "compare two runs" screen give a plain-English line without any model. Where an AI provider is bound (Android only), they add a streamed elaboration, with a gateway's raw error text passed through `PromptGuard` first.
-- **iOS.** The five-screen app runs on iOS from `ios/shared`. Stripe, Razorpay, Cashfree, Omise and Square have real Swift-side SDK bridges there; the versions are in `docs/providers/*-ios.md`.
+- The Android app registers gateways into one Koin registry (`getAll<PaymentGateway>()`), so adding one touches no existing module. There are 19 provider modules, including Stripe, Razorpay, Cashfree, Square, Omise, Google Pay, raw UPI intent, Paystack, Paytm, Xendit, M-Pesa and a generic hosted-webview that serves most of the rest from config. `docs/providers/` has 75 pages (70 providers and 5 iOS bridge notes), each saying what integrating it takes and why a gateway is real or mock.
+- Past pay-in, the backend also has routes for payouts, mandates and recurring debits, a card vault, Stripe Connect style onboarding, and an internal wallet ledger (`/payouts`, `/mandates`, `/vault`, `/connect`, `/wallet` in `backend/`). They run against an in-memory store and are labelled `MOCK_MODE` until real keys exist.
+- Payment lifecycle is a pure `(State, Event)` to effects reducer in `core:orchestration`, and the orchestrator only executes the effects. Given the same event log you get the same effects, which is what the tests rely on.
+- One `Redactor` allowlist masks secret-shaped and personal fields before anything reaches the timeline or a log.
+- Security layers, with their limits written down in `docs/SECURITY.md`: `FLAG_SECURE` on payment screens, Keystore-backed storage for saved tokens, a certificate pinning setup (the pins in the repo are placeholders), and launch-time root and debugger checks. None of that replaces the server check.
+- An error explainer and a "compare two runs" screen give a plain-English line without any model. Where an AI provider is bound (Android only), they add a streamed elaboration, with a gateway's raw error text passed through `PromptGuard` first.
+- The five-screen app also runs on iOS from `ios/shared`. Stripe, Razorpay, Cashfree, Omise and Square have real Swift-side SDK bridges there; the versions are in `docs/providers/*-ios.md`.
 
 Screens: Home, Explore (the lab, with a detail screen per provider), Activity, and Checkout, reached from the centre Pay button. Walkthroughs: [explore and verify](docs/gifs/explore_verify_flow.gif), [checkout](docs/gifs/checkout_flow.gif), [activity](docs/gifs/activity_flow.gif).
 
@@ -90,13 +90,13 @@ docs/             providers, SECURITY.md, DECISIONS.md, RELEASE.md, screenshots,
 
 Feature modules do not depend on each other and meet at `:app`. `docs/DECISIONS.md` has the one-line reasons behind the choices that look odd.
 
-## What is tested, and what is not
+## Testing, and what I have not run
 
-`grep -rho '@Test' --include='*.kt' --exclude-dir=external .` finds **211 `@Test` methods in 33 files** in this repo. The provider and toolkit modules live in the submodule and carry their own tests, which that count leaves out.
+This repo has **211 `@Test` methods in 33 files** (`grep -rho '@Test' --include='*.kt' --exclude-dir=external .`). The provider and toolkit modules live in the submodule and carry their own tests, which that count leaves out.
 
 - Real end-to-end payments need a device plus each provider's sandbox keys. The SDK integrations compile and are wired, but I have not run live money flows for every gateway, and many are `MOCK_MODE` because their sandboxes need a business account.
 - The AI explainer panel and the compare screen have no Roborazzi coverage, and neither has run against a real model on a device, only against fakes.
 - iOS and the web preview show the deterministic explainer line only.
 - Not done yet: Braintree, real RBI network tokens in the vault, real e-mandate execution, Play Billing (needs a Play Console listing), and a larger set of real logos (most gateways show a generated monogram).
 
-Related: [Doori](https://github.com/darkpandawarrior/Doori), [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit), [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic), and the [case study](https://cv-siddharth.vercel.app/project/paymentslab-kmp).
+There is a [case study](https://cv-siddharth.vercel.app/project/paymentslab-kmp). The libraries underneath are [kmp-toolkit](https://github.com/darkpandawarrior/kmp-toolkit) and [kmp-build-logic](https://github.com/darkpandawarrior/kmp-build-logic).
